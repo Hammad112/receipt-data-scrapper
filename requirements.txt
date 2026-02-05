@@ -1,0 +1,27 @@
+# Core dependencies
+langchain
+langchain-openai
+langchain-community
+openai
+pinecone-client
+python-dotenv
+
+# Data processing
+pydantic
+pandas
+numpy
+python-dateutil
+regex
+
+# UI
+streamlit
+plotly
+
+# Utilities
+tqdm
+rich
+typer
+
+# Testing
+pytest
+pytest-asyncio

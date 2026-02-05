@@ -1,0 +1,882 @@
+[
+  {
+    "query": "What did I buy last week?\"",
+    "timestamp": "2026-02-06T03:47:45.642865",
+    "result": {
+      "answer": "Based on the data analyzed, there is no record of any purchases made last week. If you have any additional receipts or specific transactions in mind, please provide further details for a more accurate analysis.",
+      "confidence": 0.0,
+      "receipts": [],
+      "items": [],
+      "processing_time": 1.846973,
+      "query_type": "temporal"
+    }
+  },
+  {
+    "query": "How much spent at coffee shops?",
+    "timestamp": "2026-02-06T03:47:47.955655",
+    "result": {
+      "answer": "Based on the provided data, a total of $68.47 was spent at coffee shops across 12 items. The breakdown of expenses at specific coffee shops is as follows:\n\n- Starbucks: $10.21\n- Philz Coffee: $14.79\n- Peet's Coffee: $17.28\n- Blue Bottle Coffee: $9.61\n\nNo receipts were found matching the query. If further details or analysis are required, please provide additional information for a more in-depth review.",
+      "confidence": 1.0,
+      "receipts": [],
+      "items": [
+        {
+          "name": "Latte",
+          "price": 4.04,
+          "category": "coffee_shop",
+          "merchant": "Starbucks",
+          "date": "2023-12-15T00:00:00",
+          "payment_method": "debit",
+          "filename": "receipt_057_coffee_20231215.txt"
+        },
+        {
+          "name": "Espresso",
+          "price": 3.17,
+          "category": "coffee_shop",
+          "merchant": "Starbucks",
+          "date": "2023-11-03T00:00:00",
+          "payment_method": "debit",
+          "filename": "receipt_050_coffee_20231103.txt"
+        },
+        {
+          "name": "Espresso",
+          "price": 2.71,
+          "category": "coffee_shop",
+          "merchant": "Starbucks",
+          "date": "2023-11-21T00:00:00",
+          "payment_method": "credit",
+          "filename": "receipt_049_coffee_20231121.txt"
+        },
+        {
+          "name": "Latte",
+          "price": 10.26,
+          "category": "coffee_shop",
+          "merchant": "Philz Coffee",
+          "date": "2023-11-06T00:00:00",
+          "payment_method": "apple_pay",
+          "filename": "receipt_059_coffee_20231106.txt"
+        },
+        {
+          "name": "Cappuccino",
+          "price": 9.42,
+          "category": "coffee_shop",
+          "merchant": "Starbucks",
+          "date": "2023-12-05T00:00:00",
+          "payment_method": "apple_pay",
+          "filename": "receipt_053_coffee_20231205.txt"
+        }
+      ],
+      "processing_time": 1.890736,
+      "query_type": "merchant"
+    }
+  },
+  {
+    "query": "What did I buy last week?\"",
+    "timestamp": "2026-02-06T03:47:49.976869",
+    "result": {
+      "answer": "Based on the available data, there is no record of any purchases made last week. If you have any specific receipts or transactions in mind that you would like to inquire about, please provide additional details for further analysis.",
+      "confidence": 0.0,
+      "receipts": [],
+      "items": [],
+      "processing_time": 1.618346,
+      "query_type": "temporal"
+    }
+  },
+  {
+    "query": "What did I buy last week?",
+    "timestamp": "2026-02-06T03:50:52.217170",
+    "result": {
+      "answer": "Based on the available data, there is no record of any purchases made last week. If you have any additional information or specific receipts you would like to review, please provide them for further analysis.",
+      "confidence": 0.0,
+      "receipts": [],
+      "items": [],
+      "processing_time": 3.228726,
+      "query_type": "temporal"
+    }
+  },
+  {
+    "query": "How much did I spend in January 2024?",
+    "timestamp": "2026-02-06T03:52:59.808289",
+    "result": {
+      "answer": "Based on the receipt data for January 2024, you spent a total of $677.11 across 6 transactions. The top relevant receipts contributing to this total are as follows:\n\n1. CVS/pharmacy on 2024-01-01: $161.32\n2. Bed Bath & Beyond on 2024-01-24: $98.14\n3. CVS/pharmacy on 2024-01-26: $120.63\n4. Nike on 2024-01-29: $95.85\n5. Rite Aid on 2024-01-04: $86.07\n\nIf you have any more questions or need further analysis, feel free to ask.",
+      "confidence": 1.0,
+      "receipts": [
+        {
+          "receipt_id": "51f3c8c9-cde0-4a3b-895f-df5dc117656f",
+          "merchant_name": "Nike",
+          "transaction_date": "2024-01-29T00:00:00",
+          "total_amount": 95.85,
+          "content": "Receipt from Nike. Date: 2024-01-29 00:00. Total amount: $95.85. Payment method: credit. Number of items: 10. Items: Ground Beef, Cereal, Chicken Breast, Salmon Fillet, Coffee Beans, and 5 more items",
+          "payment_method": "credit",
+          "merchant_address": null,
+          "merchant_phone": null,
+          "filename": "receipt_095_retail_20240129.txt"
+        },
+        {
+          "receipt_id": "6a8435c8-12e0-44dc-8a74-648bd842397a",
+          "merchant_name": "Bed Bath & Beyond",
+          "transaction_date": "2024-01-24T00:00:00",
+          "total_amount": 98.14,
+          "content": "Receipt from Bed Bath & Beyond. Date: 2024-01-24 00:00. Total amount: $98.14. Payment method: credit. Number of items: 9. Items: Orange Juice, Rice 5lb, Ground Beef, Pasta, Cheese Block, and 4 more items",
+          "payment_method": "credit",
+          "merchant_address": null,
+          "merchant_phone": null,
+          "filename": "receipt_094_retail_20240124.txt"
+        },
+        {
+          "receipt_id": "3761c575-4bfd-449c-b215-9d03aeb07cc4",
+          "merchant_name": "CVS/pharmacy",
+          "transaction_date": "2024-01-26T00:00:00",
+          "total_amount": 120.63,
+          "content": "Receipt from CVS/pharmacy. Date: 2024-01-26 00:00. Total amount: $120.63. Payment method: credit. Number of items: 7. Items: Advil 200ct, First Aid Kit, Cough Drops, Vitamin D, Band-Aids, and 2 more items",
+          "payment_method": "credit",
+          "merchant_address": null,
+          "merchant_phone": null,
+          "filename": "receipt_089_pharmacy_20240126.txt"
+        },
+        {
+          "receipt_id": "38aba03e-12aa-4f2f-9a07-74c0c22d8dd4",
+          "merchant_name": "CVS/pharmacy",
+          "transaction_date": "2024-01-01T00:00:00",
+          "total_amount": 161.32,
+          "content": "Receipt from CVS/pharmacy. Date: 2024-01-01 00:00. Total amount: $161.32. Payment method: credit. Number of items: 9. Items: Multivitamin, Advil 200ct, Thermometer, Vitamin D, Band-Aids, and 4 more items",
+          "payment_method": "credit",
+          "merchant_address": null,
+          "merchant_phone": null,
+          "filename": "receipt_086_pharmacy_20240101.txt"
+        },
+        {
+          "receipt_id": "ddacf524-894c-4ded-9db8-2b4ea5f43dc6",
+          "merchant_name": "Rite Aid",
+          "transaction_date": "2024-01-04T00:00:00",
+          "total_amount": 86.07,
+          "content": "Receipt from Rite Aid. Date: 2024-01-04 00:00. Total amount: $86.07. Payment method: credit. Number of items: 5. Items: Advil 200ct, Multivitamin, Allergy Medicine, Vitamin D, Band-Aids",
+          "payment_method": "credit",
+          "merchant_address": null,
+          "merchant_phone": null,
+          "filename": "receipt_090_pharmacy_20240104.txt"
+        }
+      ],
+      "items": [],
+      "processing_time": 3.995371,
+      "query_type": "temporal"
+    }
+  },
+  {
+    "query": "How much did I spend in January 2024?",
+    "timestamp": "2026-02-06T03:53:08.189917",
+    "result": {
+      "answer": "Based on the receipts analyzed for January 2024, you spent a total of $677.11 across 6 transactions. The top relevant receipts contributing to this total are as follows:\n\n1. CVS/pharmacy on 2024-01-01: $161.32\n2. Bed Bath & Beyond on 2024-01-24: $98.14\n3. CVS/pharmacy on 2024-01-26: $120.63\n\nPlease review your records for further details on your expenses in January 2024.",
+      "confidence": 1.0,
+      "receipts": [
+        {
+          "receipt_id": "51f3c8c9-cde0-4a3b-895f-df5dc117656f",
+          "merchant_name": "Nike",
+          "transaction_date": "2024-01-29T00:00:00",
+          "total_amount": 95.85,
+          "content": "Receipt from Nike. Date: 2024-01-29 00:00. Total amount: $95.85. Payment method: credit. Number of items: 10. Items: Ground Beef, Cereal, Chicken Breast, Salmon Fillet, Coffee Beans, and 5 more items",
+          "payment_method": "credit",
+          "merchant_address": null,
+          "merchant_phone": null,
+          "filename": "receipt_095_retail_20240129.txt"
+        },
+        {
+          "receipt_id": "6a8435c8-12e0-44dc-8a74-648bd842397a",
+          "merchant_name": "Bed Bath & Beyond",
+          "transaction_date": "2024-01-24T00:00:00",
+          "total_amount": 98.14,
+          "content": "Receipt from Bed Bath & Beyond. Date: 2024-01-24 00:00. Total amount: $98.14. Payment method: credit. Number of items: 9. Items: Orange Juice, Rice 5lb, Ground Beef, Pasta, Cheese Block, and 4 more items",
+          "payment_method": "credit",
+          "merchant_address": null,
+          "merchant_phone": null,
+          "filename": "receipt_094_retail_20240124.txt"
+        },
+        {
+          "receipt_id": "3761c575-4bfd-449c-b215-9d03aeb07cc4",
+          "merchant_name": "CVS/pharmacy",
+          "transaction_date": "2024-01-26T00:00:00",
+          "total_amount": 120.63,
+          "content": "Receipt from CVS/pharmacy. Date: 2024-01-26 00:00. Total amount: $120.63. Payment method: credit. Number of items: 7. Items: Advil 200ct, First Aid Kit, Cough Drops, Vitamin D, Band-Aids, and 2 more items",
+          "payment_method": "credit",
+          "merchant_address": null,
+          "merchant_phone": null,
+          "filename": "receipt_089_pharmacy_20240126.txt"
+        },
+        {
+          "receipt_id": "38aba03e-12aa-4f2f-9a07-74c0c22d8dd4",
+          "merchant_name": "CVS/pharmacy",
+          "transaction_date": "2024-01-01T00:00:00",
+          "total_amount": 161.32,
+          "content": "Receipt from CVS/pharmacy. Date: 2024-01-01 00:00. Total amount: $161.32. Payment method: credit. Number of items: 9. Items: Multivitamin, Advil 200ct, Thermometer, Vitamin D, Band-Aids, and 4 more items",
+          "payment_method": "credit",
+          "merchant_address": null,
+          "merchant_phone": null,
+          "filename": "receipt_086_pharmacy_20240101.txt"
+        },
+        {
+          "receipt_id": "ddacf524-894c-4ded-9db8-2b4ea5f43dc6",
+          "merchant_name": "Rite Aid",
+          "transaction_date": "2024-01-04T00:00:00",
+          "total_amount": 86.07,
+          "content": "Receipt from Rite Aid. Date: 2024-01-04 00:00. Total amount: $86.07. Payment method: credit. Number of items: 5. Items: Advil 200ct, Multivitamin, Allergy Medicine, Vitamin D, Band-Aids",
+          "payment_method": "credit",
+          "merchant_address": null,
+          "merchant_phone": null,
+          "filename": "receipt_090_pharmacy_20240104.txt"
+        }
+      ],
+      "items": [],
+      "processing_time": 2.857881,
+      "query_type": "temporal"
+    }
+  },
+  {
+    "query": "How much did I spend on supplies?",
+    "timestamp": "2026-02-06T04:00:40.968128",
+    "result": {
+      "answer": "Based on the receipt data analysis, you spent a total of $30.56 on supplies. The breakdown of this total includes purchasing Band-Aids for $6.80 at Rite Aid on 2024-01-04 and a First Aid Kit for $23.76 at CVS/pharmacy on 2024-01-16. These two items constitute the total amount spent on supplies.",
+      "confidence": 1.0,
+      "receipts": [
+        {
+          "receipt_id": "3761c575-4bfd-449c-b215-9d03aeb07cc4",
+          "merchant_name": "CVS/pharmacy",
+          "transaction_date": "2024-01-26T00:00:00",
+          "total_amount": 120.63,
+          "content": "Receipt from CVS/pharmacy. Date: 2024-01-26 00:00. Total amount: $120.63. Payment method: credit. Number of items: 7. Items: Advil 200ct, First Aid Kit, Cough Drops, Vitamin D, Band-Aids, and 2 more items",
+          "payment_method": "credit",
+          "merchant_address": null,
+          "merchant_phone": null,
+          "filename": "receipt_089_pharmacy_20240126.txt"
+        },
+        {
+          "receipt_id": "38aba03e-12aa-4f2f-9a07-74c0c22d8dd4",
+          "merchant_name": "CVS/pharmacy",
+          "transaction_date": "2024-01-01T00:00:00",
+          "total_amount": 161.32,
+          "content": "Receipt from CVS/pharmacy. Date: 2024-01-01 00:00. Total amount: $161.32. Payment method: credit. Number of items: 9. Items: Multivitamin, Advil 200ct, Thermometer, Vitamin D, Band-Aids, and 4 more items",
+          "payment_method": "credit",
+          "merchant_address": null,
+          "merchant_phone": null,
+          "filename": "receipt_086_pharmacy_20240101.txt"
+        },
+        {
+          "receipt_id": "6229ef7c-903f-4d71-82b5-4a07ee4d023e",
+          "merchant_name": "Ace Hardware",
+          "transaction_date": "2023-12-07T00:00:00",
+          "total_amount": 133.35,
+          "content": "Receipt from Ace Hardware. Date: 2023-12-07 00:00. Total amount: $133.35. Payment method: credit. Number of items: 15. Items: Cereal, Apples, Bread, Ground Beef, Avocados, and 10 more items",
+          "payment_method": "credit",
+          "merchant_address": null,
+          "merchant_phone": null,
+          "filename": "receipt_096_hardware_20231207.txt"
+        },
+        {
+          "receipt_id": "61410690-cb02-4c31-a038-b0875fa82e2d",
+          "merchant_name": "Ace Hardware",
+          "transaction_date": "2023-11-14T00:00:00",
+          "total_amount": 72.18,
+          "content": "Receipt from Ace Hardware. Date: 2023-11-14 00:00. Total amount: $72.18. Payment method: credit. Number of items: 6. Items: Eggs, Rice 5lb, Salmon Fillet, Greek Yogurt, Pasta, and 1 more items",
+          "payment_method": "credit",
+          "merchant_address": null,
+          "merchant_phone": null,
+          "filename": "receipt_097_hardware_20231114.txt"
+        }
+      ],
+      "items": [
+        {
+          "name": "Band-Aids",
+          "price": 6.8,
+          "category": "other",
+          "merchant": "Rite Aid",
+          "date": "2024-01-04T00:00:00",
+          "payment_method": "credit",
+          "filename": "receipt_090_pharmacy_20240104.txt"
+        },
+        {
+          "name": "First Aid Kit",
+          "price": 23.76,
+          "category": "pharmacy",
+          "merchant": "CVS/pharmacy",
+          "date": "2024-01-16T00:00:00",
+          "payment_method": "credit",
+          "filename": "receipt_088_pharmacy_20240116.txt"
+        }
+      ],
+      "processing_time": 3.575135,
+      "query_type": "general"
+    }
+  },
+  {
+    "query": "List all groceries over $5",
+    "timestamp": "2026-02-06T04:00:49.290959",
+    "result": {
+      "answer": "Based on the provided data, here is a list of groceries priced over $5:\n\n1. Cereal ($5.45) at Lowe's\n2. Cereal ($5.20) at Safeway\n3. Cereal ($5.36) at Target\n4. Cereal ($5.39) at Target\n5. Almond Milk ($5.70) at Walmart Supercenter\n6. Cereal ($5.67) at Bed Bath & Beyond\n7. Cereal ($5.22) at Gap\n8. Cereal ($5.29) at Trader Joe's\n9. Cereal ($7.84) at 76 Gas Station\n10. Almond Milk ($5.74) at Target\n\nThe total calculated value of all groceries over $5 is $87.18.",
+      "confidence": 1.0,
+      "receipts": [],
+      "items": [
+        {
+          "name": "Cereal",
+          "price": 5.45,
+          "category": "groceries",
+          "merchant": "Lowe's",
+          "date": "2023-12-02T00:00:00",
+          "payment_method": "credit",
+          "filename": "receipt_098_hardware_20231202.txt"
+        },
+        {
+          "name": "Cereal",
+          "price": 5.2,
+          "category": "groceries",
+          "merchant": "Safeway",
+          "date": "2023-11-02T00:00:00",
+          "payment_method": "credit",
+          "filename": "receipt_022_grocery_20231102.txt"
+        },
+        {
+          "name": "Cereal",
+          "price": 5.36,
+          "category": "groceries",
+          "merchant": "Target",
+          "date": "2023-12-13T00:00:00",
+          "payment_method": "credit",
+          "filename": "receipt_012_grocery_20231213.txt"
+        },
+        {
+          "name": "Cereal",
+          "price": 5.39,
+          "category": "groceries",
+          "merchant": "Target",
+          "date": "2023-12-23T00:00:00",
+          "payment_method": "credit",
+          "filename": "receipt_003_grocery_20231223.txt"
+        },
+        {
+          "name": "Almond Milk",
+          "price": 5.7,
+          "category": "groceries",
+          "merchant": "Walmart Supercenter",
+          "date": "2023-11-12T00:00:00",
+          "payment_method": "credit",
+          "filename": "receipt_021_grocery_20231112.txt"
+        }
+      ],
+      "processing_time": 4.132478,
+      "query_type": "category"
+    }
+  },
+  {
+    "query": "Show me all electronics purchases",
+    "timestamp": "2026-02-06T04:01:01.271047",
+    "result": {
+      "answer": "Based on the data provided, here are the electronics purchases:\n\n1. Laptop Charger ($75.31) at BEST BUY on 2023-12-14\n2. Mouse ($55.53) at BEST BUY on 2024-01-30\n3. Phone Case ($41.13) at MICRO CENTER on 2023-12-16\n4. SSD Drive 1TB ($106.75) at APPLE on 2023-11-27\n5. Keyboard ($106.49) at B&H PHOTO on 2023-11-08\n6. Memory Card 256GB ($47.98) at APPLE on 2023-11-06\n7. Mouse ($36.97) at APPLE on 2024-01-09\n\nTotal Calculated Value of all electronics purchases: $470.16",
+      "confidence": 1.0,
+      "receipts": [],
+      "items": [
+        {
+          "name": "Laptop Charger",
+          "price": 75.31,
+          "category": "electronics",
+          "merchant": "BEST BUY",
+          "date": "2023-12-14T00:00:00",
+          "payment_method": "credit",
+          "filename": "receipt_080_electronics_20231214.txt"
+        },
+        {
+          "name": "Mouse",
+          "price": 55.53,
+          "category": "electronics",
+          "merchant": "BEST BUY",
+          "date": "2024-01-30T00:00:00",
+          "payment_method": "credit",
+          "filename": "receipt_078_electronics_20240130.txt"
+        },
+        {
+          "name": "Phone Case",
+          "price": 41.13,
+          "category": "electronics",
+          "merchant": "MICRO CENTER",
+          "date": "2023-12-16T00:00:00",
+          "payment_method": "credit",
+          "filename": "receipt_076_electronics_20231216.txt"
+        },
+        {
+          "name": "SSD Drive 1TB",
+          "price": 106.75,
+          "category": "electronics",
+          "merchant": "APPLE",
+          "date": "2023-11-27T00:00:00",
+          "payment_method": "credit",
+          "filename": "receipt_077_electronics_20231127.txt"
+        },
+        {
+          "name": "Keyboard",
+          "price": 106.49,
+          "category": "electronics",
+          "merchant": "B&H PHOTO",
+          "date": "2023-11-08T00:00:00",
+          "payment_method": "credit",
+          "filename": "receipt_083_electronics_20231108.txt"
+        }
+      ],
+      "processing_time": 3.300283,
+      "query_type": "category"
+    }
+  },
+  {
+    "query": "What pharmacy items did I buy?",
+    "timestamp": "2026-02-06T04:01:07.131913",
+    "result": {
+      "answer": "Based on the receipt data analysis, the pharmacy items you purchased include:\n\n1. Multivitamin ($19.59) at Rite Aid on 2024-01-04\n2. Multivitamin ($18.02) at CVS/pharmacy on 2024-01-16\n3. Vitamin D ($15.58) at Walgreens on 2023-11-05\n4. Multivitamin ($17.17) at CVS/pharmacy on 2024-01-01\n5. Vitamin D ($14.99) at Walgreens on 2023-11-29\n6. Vitamin D ($11.43) at CVS/pharmacy on 2024-01-26\n7. Allergy Medicine ($30.26) at CVS/pharmacy on 2023-12-05\n\nThe total calculated value of these pharmacy items is $127.04.",
+      "confidence": 1.0,
+      "receipts": [],
+      "items": [
+        {
+          "name": "Multivitamin",
+          "price": 19.59,
+          "category": "pharmacy",
+          "merchant": "Rite Aid",
+          "date": "2024-01-04T00:00:00",
+          "payment_method": "credit",
+          "filename": "receipt_090_pharmacy_20240104.txt"
+        },
+        {
+          "name": "Multivitamin",
+          "price": 18.02,
+          "category": "pharmacy",
+          "merchant": "CVS/pharmacy",
+          "date": "2024-01-16T00:00:00",
+          "payment_method": "credit",
+          "filename": "receipt_088_pharmacy_20240116.txt"
+        },
+        {
+          "name": "Vitamin D",
+          "price": 15.58,
+          "category": "pharmacy",
+          "merchant": "Walgreens",
+          "date": "2023-11-05T00:00:00",
+          "payment_method": "credit",
+          "filename": "receipt_085_pharmacy_20231105.txt"
+        },
+        {
+          "name": "Multivitamin",
+          "price": 17.17,
+          "category": "pharmacy",
+          "merchant": "CVS/pharmacy",
+          "date": "2024-01-01T00:00:00",
+          "payment_method": "credit",
+          "filename": "receipt_086_pharmacy_20240101.txt"
+        },
+        {
+          "name": "Vitamin D",
+          "price": 14.99,
+          "category": "pharmacy",
+          "merchant": "Walgreens",
+          "date": "2023-11-29T00:00:00",
+          "payment_method": "credit",
+          "filename": "receipt_084_pharmacy_20231129.txt"
+        }
+      ],
+      "processing_time": 3.644796,
+      "query_type": "general"
+    }
+  },
+  {
+    "query": "Find all Walmart receipts",
+    "timestamp": "2026-02-06T04:01:21.124252",
+    "result": {
+      "answer": "Based on the data analyzed, there are currently no Walmart receipts available in the system. If you have any additional information or require further assistance, please feel free to provide more details.",
+      "confidence": 0.0,
+      "receipts": [],
+      "items": [],
+      "processing_time": 1.940084,
+      "query_type": "merchant"
+    }
+  },
+  {
+    "query": "Find all Walmart receipts",
+    "timestamp": "2026-02-06T04:02:32.023766",
+    "result": {
+      "answer": "Based on the data analyzed, there are currently no Walmart receipts available in the system. If you have any additional receipts or specific transactions you would like to review, please provide them for further analysis. If you require assistance with any other financial data or analysis, feel free to let me know.",
+      "confidence": 0.0,
+      "receipts": [],
+      "items": [],
+      "processing_time": 3.06094,
+      "query_type": "merchant"
+    }
+  },
+  {
+    "query": "Find health-related purchases",
+    "timestamp": "2026-02-06T04:04:54.741528",
+    "result": {
+      "answer": "Based on the receipt data provided, here are the health-related purchases identified:\n\n1. Vitamin D:\n   - $15.58 at Walgreens on 2023-11-05\n   - $14.99 at Walgreens on 2023-11-29\n   - $11.43 at CVS/pharmacy on 2024-01-26\n   - $11.80 at CVS/pharmacy on 2024-01-01\n\n2. Multivitamin:\n   - $19.59 at Rite Aid on 2024-01-04\n   - $18.02 at CVS/pharmacy on 2024-01-16\n\n3. Allergy Medicine:\n   - $30.26 at CVS/pharmacy on 2023-12-05\n\nThe total calculated value of all health-related purchases is $136.12.",
+      "confidence": 1.0,
+      "receipts": [],
+      "items": [
+        {
+          "name": "Vitamin D",
+          "price": 15.58,
+          "category": "pharmacy",
+          "merchant": "Walgreens",
+          "date": "2023-11-05T00:00:00",
+          "payment_method": "credit",
+          "filename": "receipt_085_pharmacy_20231105.txt"
+        },
+        {
+          "name": "Multivitamin",
+          "price": 19.59,
+          "category": "pharmacy",
+          "merchant": "Rite Aid",
+          "date": "2024-01-04T00:00:00",
+          "payment_method": "credit",
+          "filename": "receipt_090_pharmacy_20240104.txt"
+        },
+        {
+          "name": "Vitamin D",
+          "price": 14.99,
+          "category": "pharmacy",
+          "merchant": "Walgreens",
+          "date": "2023-11-29T00:00:00",
+          "payment_method": "credit",
+          "filename": "receipt_084_pharmacy_20231129.txt"
+        },
+        {
+          "name": "Multivitamin",
+          "price": 18.02,
+          "category": "pharmacy",
+          "merchant": "CVS/pharmacy",
+          "date": "2024-01-16T00:00:00",
+          "payment_method": "credit",
+          "filename": "receipt_088_pharmacy_20240116.txt"
+        },
+        {
+          "name": "Vitamin D",
+          "price": 11.43,
+          "category": "pharmacy",
+          "merchant": "CVS/pharmacy",
+          "date": "2024-01-26T00:00:00",
+          "payment_method": "credit",
+          "filename": "receipt_089_pharmacy_20240126.txt"
+        }
+      ],
+      "processing_time": 3.492884,
+      "query_type": "general"
+    }
+  },
+  {
+    "query": "How much spent at coffee shops?",
+    "timestamp": "2026-02-06T04:05:07.170304",
+    "result": {
+      "answer": "Based on the provided data, a total of $68.47 was spent at coffee shops across 12 items. The breakdown of expenses at different coffee shops is as follows:\n\n1. Starbucks:\n   - Latte ($4.04) on 2023-12-15\n   - Espresso ($3.17) on 2023-11-03\n   - Espresso ($2.71) on 2023-11-21\n   - Cappuccino ($9.42) on 2023-12-05\n\n2. Philz Coffee:\n   - Latte ($10.26) on 2023-11-06\n   - Latte ($4.53) on 2024-01-04\n\n3. Peet's Coffee:\n   - Espresso ($6.60) on 2023-11-21\n   - Cappuccino ($10.68) on 2023-12-31\n\n4. Blue Bottle Coffee:\n   - Espresso ($6.72) on 2023-12-01\n   - Espresso ($2.89) on 2023-11-04\n\nNo receipts specifically match the coffee shop expenses. If you require further",
+      "confidence": 1.0,
+      "receipts": [],
+      "items": [
+        {
+          "name": "Latte",
+          "price": 4.04,
+          "category": "coffee_shop",
+          "merchant": "Starbucks",
+          "date": "2023-12-15T00:00:00",
+          "payment_method": "debit",
+          "filename": "receipt_057_coffee_20231215.txt"
+        },
+        {
+          "name": "Espresso",
+          "price": 3.17,
+          "category": "coffee_shop",
+          "merchant": "Starbucks",
+          "date": "2023-11-03T00:00:00",
+          "payment_method": "debit",
+          "filename": "receipt_050_coffee_20231103.txt"
+        },
+        {
+          "name": "Espresso",
+          "price": 2.71,
+          "category": "coffee_shop",
+          "merchant": "Starbucks",
+          "date": "2023-11-21T00:00:00",
+          "payment_method": "credit",
+          "filename": "receipt_049_coffee_20231121.txt"
+        },
+        {
+          "name": "Latte",
+          "price": 10.26,
+          "category": "coffee_shop",
+          "merchant": "Philz Coffee",
+          "date": "2023-11-06T00:00:00",
+          "payment_method": "apple_pay",
+          "filename": "receipt_059_coffee_20231106.txt"
+        },
+        {
+          "name": "Cappuccino",
+          "price": 9.42,
+          "category": "coffee_shop",
+          "merchant": "Starbucks",
+          "date": "2023-12-05T00:00:00",
+          "payment_method": "apple_pay",
+          "filename": "receipt_053_coffee_20231205.txt"
+        }
+      ],
+      "processing_time": 4.498544,
+      "query_type": "merchant"
+    }
+  },
+  {
+    "query": "Total spending at restaurants",
+    "timestamp": "2026-02-06T04:05:15.961182",
+    "result": {
+      "answer": "Based on the provided data, the total spending at restaurants amounts to $191.32. Here are the specific line items contributing to this total:\n\n1. Chicken Sandwich at THE STEAKHOUSE - $12.90\n2. Salad - Large at PANERA BREAD - $4.68\n3. Salad - Large at PANERA BREAD - $4.16\n4. Chicken Sandwich at MAMA'S PIZZA - $15.13\n5. Burger & Fries at MEDITERRANEAN GRILL - $14.16\n6. Salad - Large at SUBWAY - $4.84\n7. Chicken Sandwich at BURGER PALACE - $15.73\n8. Margherita Pizza at MEDITERRANEAN GRILL - $15.53\n9. Burger & Fries at BURGER PALACE - $17.72\n10. Margherita Pizza at MEDITERRANEAN GRILL - $14.41\n\nIf you require further analysis or details, please let me know.",
+      "confidence": 1.0,
+      "receipts": [],
+      "items": [
+        {
+          "name": "Chicken Sandwich",
+          "price": 12.9,
+          "category": "restaurant",
+          "merchant": "THE STEAKHOUSE",
+          "date": "2023-12-09T00:00:00",
+          "payment_method": "credit",
+          "filename": "receipt_037_restaurant_20231209.txt"
+        },
+        {
+          "name": "Salad - Large",
+          "price": 4.68,
+          "category": "restaurant",
+          "merchant": "PANERA BREAD",
+          "date": "2023-12-21T00:00:00",
+          "payment_method": "cash",
+          "filename": "receipt_062_fast_food_20231221.txt"
+        },
+        {
+          "name": "Salad - Large",
+          "price": 4.16,
+          "category": "restaurant",
+          "merchant": "PANERA BREAD",
+          "date": "2023-12-14T00:00:00",
+          "payment_method": "credit",
+          "filename": "receipt_075_fast_food_20231214.txt"
+        },
+        {
+          "name": "Chicken Sandwich",
+          "price": 15.13,
+          "category": "restaurant",
+          "merchant": "MAMA'S PIZZA",
+          "date": "2023-12-29T00:00:00",
+          "payment_method": "credit",
+          "filename": "receipt_033_restaurant_20231229.txt"
+        },
+        {
+          "name": "Burger & Fries",
+          "price": 14.16,
+          "category": "restaurant",
+          "merchant": "MEDITERRANEAN GRILL",
+          "date": "2023-12-02T00:00:00",
+          "payment_method": "credit",
+          "filename": "receipt_041_restaurant_20231202.txt"
+        }
+      ],
+      "processing_time": 4.079691,
+      "query_type": "general"
+    }
+  },
+  {
+    "query": "How much did I spend on supplies?",
+    "timestamp": "2026-02-06T04:05:24.666906",
+    "result": {
+      "answer": "Based on the receipt data analysis, you spent a total of $30.56 on supplies. The breakdown of this total includes purchasing Band-Aids for $6.80 at Rite Aid on 2024-01-04 and a First Aid Kit for $23.76 at CVS/pharmacy on 2024-01-16. These two items constitute the total amount spent on supplies.",
+      "confidence": 1.0,
+      "receipts": [
+        {
+          "receipt_id": "3761c575-4bfd-449c-b215-9d03aeb07cc4",
+          "merchant_name": "CVS/pharmacy",
+          "transaction_date": "2024-01-26T00:00:00",
+          "total_amount": 120.63,
+          "content": "Receipt from CVS/pharmacy. Date: 2024-01-26 00:00. Total amount: $120.63. Payment method: credit. Number of items: 7. Items: Advil 200ct, First Aid Kit, Cough Drops, Vitamin D, Band-Aids, and 2 more items",
+          "payment_method": "credit",
+          "merchant_address": null,
+          "merchant_phone": null,
+          "filename": "receipt_089_pharmacy_20240126.txt"
+        },
+        {
+          "receipt_id": "38aba03e-12aa-4f2f-9a07-74c0c22d8dd4",
+          "merchant_name": "CVS/pharmacy",
+          "transaction_date": "2024-01-01T00:00:00",
+          "total_amount": 161.32,
+          "content": "Receipt from CVS/pharmacy. Date: 2024-01-01 00:00. Total amount: $161.32. Payment method: credit. Number of items: 9. Items: Multivitamin, Advil 200ct, Thermometer, Vitamin D, Band-Aids, and 4 more items",
+          "payment_method": "credit",
+          "merchant_address": null,
+          "merchant_phone": null,
+          "filename": "receipt_086_pharmacy_20240101.txt"
+        },
+        {
+          "receipt_id": "6229ef7c-903f-4d71-82b5-4a07ee4d023e",
+          "merchant_name": "Ace Hardware",
+          "transaction_date": "2023-12-07T00:00:00",
+          "total_amount": 133.35,
+          "content": "Receipt from Ace Hardware. Date: 2023-12-07 00:00. Total amount: $133.35. Payment method: credit. Number of items: 15. Items: Cereal, Apples, Bread, Ground Beef, Avocados, and 10 more items",
+          "payment_method": "credit",
+          "merchant_address": null,
+          "merchant_phone": null,
+          "filename": "receipt_096_hardware_20231207.txt"
+        },
+        {
+          "receipt_id": "61410690-cb02-4c31-a038-b0875fa82e2d",
+          "merchant_name": "Ace Hardware",
+          "transaction_date": "2023-11-14T00:00:00",
+          "total_amount": 72.18,
+          "content": "Receipt from Ace Hardware. Date: 2023-11-14 00:00. Total amount: $72.18. Payment method: credit. Number of items: 6. Items: Eggs, Rice 5lb, Salmon Fillet, Greek Yogurt, Pasta, and 1 more items",
+          "payment_method": "credit",
+          "merchant_address": null,
+          "merchant_phone": null,
+          "filename": "receipt_097_hardware_20231114.txt"
+        }
+      ],
+      "items": [
+        {
+          "name": "Band-Aids",
+          "price": 6.8,
+          "category": "other",
+          "merchant": "Rite Aid",
+          "date": "2024-01-04T00:00:00",
+          "payment_method": "credit",
+          "filename": "receipt_090_pharmacy_20240104.txt"
+        },
+        {
+          "name": "First Aid Kit",
+          "price": 23.76,
+          "category": "pharmacy",
+          "merchant": "CVS/pharmacy",
+          "date": "2024-01-16T00:00:00",
+          "payment_method": "credit",
+          "filename": "receipt_088_pharmacy_20240116.txt"
+        }
+      ],
+      "processing_time": 2.242487,
+      "query_type": "general"
+    }
+  },
+  {
+    "query": "Spent on personal care items?",
+    "timestamp": "2026-02-06T04:06:33.089178",
+    "result": {
+      "answer": "Based on the analysis of the receipts provided, the total amount spent on personal care items across the 5 receipts is $577.28. The breakdown of spending at specific merchants is as follows:\n\n1. CVS/pharmacy (2024-01-26): $120.63\n2. CVS/pharmacy (2024-01-01): $161.32\n3. Target (2024-01-11): $115.65\n4. Bed Bath & Beyond (2023-12-16): $128.22\n5. Walgreens (2023-11-29): $51.46\n\nIf you require further details or analysis, please let me know.",
+      "confidence": 1.0,
+      "receipts": [
+        {
+          "receipt_id": "3761c575-4bfd-449c-b215-9d03aeb07cc4",
+          "merchant_name": "CVS/pharmacy",
+          "transaction_date": "2024-01-26T00:00:00",
+          "total_amount": 120.63,
+          "content": "Receipt from CVS/pharmacy. Date: 2024-01-26 00:00. Total amount: $120.63. Payment method: credit. Number of items: 7. Items: Advil 200ct, First Aid Kit, Cough Drops, Vitamin D, Band-Aids, and 2 more items",
+          "payment_method": "credit",
+          "merchant_address": null,
+          "merchant_phone": null,
+          "filename": "receipt_089_pharmacy_20240126.txt"
+        },
+        {
+          "receipt_id": "38aba03e-12aa-4f2f-9a07-74c0c22d8dd4",
+          "merchant_name": "CVS/pharmacy",
+          "transaction_date": "2024-01-01T00:00:00",
+          "total_amount": 161.32,
+          "content": "Receipt from CVS/pharmacy. Date: 2024-01-01 00:00. Total amount: $161.32. Payment method: credit. Number of items: 9. Items: Multivitamin, Advil 200ct, Thermometer, Vitamin D, Band-Aids, and 4 more items",
+          "payment_method": "credit",
+          "merchant_address": null,
+          "merchant_phone": null,
+          "filename": "receipt_086_pharmacy_20240101.txt"
+        },
+        {
+          "receipt_id": "71f6abe4-8c22-43f6-8dd9-738da40a2db8",
+          "merchant_name": "Target",
+          "transaction_date": "2024-01-11T00:00:00",
+          "total_amount": 115.65,
+          "content": "Receipt from Target. Date: 2024-01-11 00:00. Total amount: $115.65. Payment method: credit. Number of items: 15. Items: Olive Oil, Organic Bananas, Spinach, Greek Yogurt, Eggs, and 10 more items",
+          "payment_method": "credit",
+          "merchant_address": null,
+          "merchant_phone": null,
+          "filename": "receipt_008_grocery_20240111.txt"
+        },
+        {
+          "receipt_id": "c178f36c-519a-48ee-aff0-40e0165d08b9",
+          "merchant_name": "Bed Bath & Beyond",
+          "transaction_date": "2023-12-16T00:00:00",
+          "total_amount": 128.22,
+          "content": "Receipt from Bed Bath & Beyond. Date: 2023-12-16 00:00. Total amount: $128.22. Payment method: credit. Number of items: 13. Items: Organic Bananas, Olive Oil, Avocados, Chicken Breast, Bread, and 8 more items",
+          "payment_method": "credit",
+          "merchant_address": null,
+          "merchant_phone": null,
+          "filename": "receipt_092_retail_20231216.txt"
+        },
+        {
+          "receipt_id": "e330a79c-445d-4547-88de-b2780248591b",
+          "merchant_name": "Walgreens",
+          "transaction_date": "2023-11-29T00:00:00",
+          "total_amount": 51.46,
+          "content": "Receipt from Walgreens. Date: 2023-11-29 00:00. Total amount: $51.46. Payment method: credit. Number of items: 4. Items: Advil 200ct, Cough Drops, Band-Aids, Vitamin D",
+          "payment_method": "credit",
+          "merchant_address": null,
+          "merchant_phone": null,
+          "filename": "receipt_084_pharmacy_20231129.txt"
+        }
+      ],
+      "items": [],
+      "processing_time": 3.427581,
+      "query_type": "general"
+    }
+  },
+  {
+    "query": "Show me treats I bought",
+    "timestamp": "2026-02-06T04:07:04.305065",
+    "result": {
+      "answer": "Based on the receipt data analysis, here are the treats you bought:\n\n1. Ice Cream ($3.20) at MCDONALD'S on 2023-11-07 [cash]\n2. Ice Cream ($3.20) at PANERA BREAD on 2023-12-10 [debit]\n3. Ice Cream ($2.54) at PANERA BREAD on 2023-11-23 [credit]\n4. Cookie ($2.95) at CHIPOTLE MEXICAN GRILL on 2023-11-16 [debit]\n5. Cookie ($2.08) at CHIPOTLE MEXICAN GRILL on 2023-11-25 [credit]\n\nTotal calculated value of treats bought: $13.97",
+      "confidence": 0.5,
+      "receipts": [],
+      "items": [
+        {
+          "name": "Ice Cream",
+          "price": 3.2,
+          "category": "treats",
+          "merchant": "MCDONALD'S",
+          "date": "2023-11-07T00:00:00",
+          "payment_method": "cash",
+          "filename": "receipt_065_fast_food_20231107.txt"
+        },
+        {
+          "name": "Ice Cream",
+          "price": 3.2,
+          "category": "treats",
+          "merchant": "PANERA BREAD",
+          "date": "2023-12-10T00:00:00",
+          "payment_method": "debit",
+          "filename": "receipt_067_fast_food_20231210.txt"
+        },
+        {
+          "name": "Ice Cream",
+          "price": 2.54,
+          "category": "treats",
+          "merchant": "PANERA BREAD",
+          "date": "2023-11-23T00:00:00",
+          "payment_method": "credit",
+          "filename": "receipt_072_fast_food_20231123.txt"
+        },
+        {
+          "name": "Cookie",
+          "price": 2.95,
+          "category": "treats",
+          "merchant": "CHIPOTLE MEXICAN GRILL",
+          "date": "2023-11-16T00:00:00",
+          "payment_method": "debit",
+          "filename": "receipt_064_fast_food_20231116.txt"
+        },
+        {
+          "name": "Cookie",
+          "price": 2.08,
+          "category": "treats",
+          "merchant": "CHIPOTLE MEXICAN GRILL",
+          "date": "2023-11-25T00:00:00",
+          "payment_method": "credit",
+          "filename": "receipt_070_fast_food_20231125.txt"
+        }
+      ],
+      "processing_time": 3.523793,
+      "query_type": "general"
+    }
+  }
+]
