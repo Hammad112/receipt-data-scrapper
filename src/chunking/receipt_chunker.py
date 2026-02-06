@@ -12,6 +12,7 @@ from datetime import datetime
 from decimal import Decimal
 from typing import List, Dict, Any, Optional
 from collections import defaultdict
+import re
 
 try:
     from ..models import Receipt, ReceiptItem, ReceiptChunk, ItemCategory
@@ -45,6 +46,12 @@ class ReceiptChunker:
             'merchant_info': 'Merchant details',
             'payment_method': 'Payment method information',
         }
+
+    def _normalize_merchant_name(self, name: str) -> str:
+        name = (name or "").lower()
+        name = re.sub(r"[^a-z0-9\s]", " ", name)
+        name = re.sub(r"\s+", " ", name).strip()
+        return name
     
     def chunk_receipt(self, receipt: Receipt) -> List[ReceiptChunk]:
         """
@@ -94,6 +101,8 @@ class ReceiptChunker:
         content_parts = [
             f"Receipt from {receipt.merchant_name}",
             f"Date: {receipt.transaction_date.strftime('%Y-%m-%d %H:%M')}",
+            f"Subtotal: ${receipt.subtotal:.2f}",
+            f"Tax: ${receipt.tax_amount:.2f}",
             f"Total amount: ${receipt.total_amount:.2f}",
             f"Payment method: {receipt.payment_method.value}",
             f"Number of items: {len(receipt.items)}",
@@ -105,8 +114,19 @@ class ReceiptChunker:
         if receipt.tip_amount:
             content_parts.append(f"Tip: ${receipt.tip_amount:.2f}")
         
+        if receipt.delivery_fee:
+            content_parts.append(f"Delivery fee: ${receipt.delivery_fee:.2f}")
+
         if receipt.loyalty_program:
             content_parts.append(f"Loyalty program: {receipt.loyalty_program}")
+
+        if receipt.has_warranty and receipt.warranty_text:
+            content_parts.append(f"Warranty info: {receipt.warranty_text}")
+        elif receipt.has_warranty:
+            content_parts.append("Warranty info present")
+
+        if receipt.return_transaction:
+            content_parts.append("Return transaction")
         
         # Add item summary
         if receipt.items:
@@ -120,7 +140,9 @@ class ReceiptChunker:
         metadata = {
             'receipt_id': receipt.receipt_id,
             'merchant_name': receipt.merchant_name,
+            'merchant_name_norm': self._normalize_merchant_name(receipt.merchant_name),
             'transaction_date': receipt.transaction_date.isoformat(),
+            'transaction_ts': int(receipt.transaction_date.timestamp()),
             'transaction_year': receipt.transaction_date.year,
             'transaction_month': receipt.transaction_date.month,
             'transaction_day': receipt.transaction_date.day,
@@ -132,10 +154,33 @@ class ReceiptChunker:
             'item_count': len(receipt.items),
             'has_discounts': receipt.discounts is not None,
             'has_tip': receipt.tip_amount is not None,
+            'has_delivery_fee': receipt.delivery_fee is not None,
             'is_return': receipt.return_transaction,
+            'has_warranty': receipt.has_warranty,
             'categories': list(set(item.category.value for item in receipt.items if item.category)),
             'filename': receipt.filename,
         }
+
+        if receipt.card_network:
+            metadata['card_network'] = receipt.card_network
+        if receipt.card_last4:
+            metadata['card_last4'] = receipt.card_last4
+        if receipt.tip_amount is not None:
+            metadata['tip_amount'] = float(receipt.tip_amount)
+        if receipt.discounts is not None:
+            metadata['discounts'] = float(receipt.discounts)
+        if receipt.delivery_fee is not None:
+            metadata['delivery_fee'] = float(receipt.delivery_fee)
+        if receipt.merchant_address:
+            metadata['merchant_address'] = receipt.merchant_address
+        if receipt.merchant_city:
+            metadata['merchant_city'] = receipt.merchant_city
+        if receipt.merchant_state:
+            metadata['merchant_state'] = receipt.merchant_state
+        if receipt.merchant_zip:
+            metadata['merchant_zip'] = receipt.merchant_zip
+        if receipt.has_warranty and receipt.warranty_text:
+            metadata['warranty_text'] = receipt.warranty_text
         
         return ReceiptChunk(
             chunk_id=str(uuid.uuid4()),
@@ -148,13 +193,15 @@ class ReceiptChunker:
     
     def _create_item_chunks(self, receipt: Receipt) -> List[ReceiptChunk]:
         """
-        Create individual chunks for each item.
+        Create individual chunks for each line item.
         
-        These chunks are optimized for:
-        - Specific product searches
-        - Price comparisons
-        - Category-based queries
-        - Quantity-based queries
+        Strategy:
+        - Granularity: One chunk per item ensures precise product searches.
+        - Context Injection: Each item chunk is enriched with the purchase date, 
+          merchant name, and payment method to allow for filtered retrieval 
+          (e.g., "Bananas from Target").
+        - Optimization: Ideal for querying specific products, price history, 
+          and category-based spending.
         """
         chunks = []
         
@@ -175,7 +222,7 @@ class ReceiptChunker:
             if item.warranty_info:
                 content_parts.append(f"Warranty: {item.warranty_info}")
             
-            # Add receipt context
+            # Add essential receipt context for semantic search accuracy
             content_parts.extend([
                 f"Purchased at: {receipt.merchant_name}",
                 f"Date: {receipt.transaction_date.strftime('%Y-%m-%d')}",
@@ -184,6 +231,7 @@ class ReceiptChunker:
             
             content = ". ".join(content_parts)
             
+            # Rich metadata for Pinecone hybrid filtering
             metadata = {
                 'receipt_id': receipt.receipt_id,
                 'item_index': i,
@@ -193,7 +241,9 @@ class ReceiptChunker:
                 'item_unit_price': float(item.unit_price),
                 'item_quantity': float(item.quantity),
                 'merchant_name': receipt.merchant_name,
+                'merchant_name_norm': self._normalize_merchant_name(receipt.merchant_name),
                 'transaction_date': receipt.transaction_date.isoformat(),
+                'transaction_ts': int(receipt.transaction_date.timestamp()),
                 'transaction_year': receipt.transaction_date.year,
                 'transaction_month': receipt.transaction_date.month,
                 'payment_method': receipt.payment_method.value,
@@ -201,6 +251,10 @@ class ReceiptChunker:
                 'has_warranty': item.warranty_info is not None,
                 'filename': receipt.filename,
             }
+            if receipt.card_network:
+                metadata['card_network'] = receipt.card_network
+            if receipt.card_last4:
+                metadata['card_last4'] = receipt.card_last4
             
             chunk = ReceiptChunk(
                 chunk_id=str(uuid.uuid4()),
@@ -258,7 +312,9 @@ class ReceiptChunker:
                 'total_amount': float(total_amount),
                 'total_quantity': float(total_quantity),
                 'merchant_name': receipt.merchant_name,
+                'merchant_name_norm': self._normalize_merchant_name(receipt.merchant_name),
                 'transaction_date': receipt.transaction_date.isoformat(),
+                'transaction_ts': int(receipt.transaction_date.timestamp()),
                 'transaction_year': receipt.transaction_date.year,
                 'transaction_month': receipt.transaction_date.month,
                 'payment_method': receipt.payment_method.value,
@@ -266,6 +322,10 @@ class ReceiptChunker:
                 'average_item_price': float(total_amount / len(items)),
                 'filename': receipt.filename,
             }
+            if receipt.card_network:
+                metadata['card_network'] = receipt.card_network
+            if receipt.card_last4:
+                metadata['card_last4'] = receipt.card_last4
             
             chunk = ReceiptChunk(
                 chunk_id=str(uuid.uuid4()),
@@ -320,7 +380,9 @@ class ReceiptChunker:
         metadata = {
             'receipt_id': receipt.receipt_id,
             'merchant_name': receipt.merchant_name,
+            'merchant_name_norm': self._normalize_merchant_name(receipt.merchant_name),
             'transaction_date': receipt.transaction_date.isoformat(),
+            'transaction_ts': int(receipt.transaction_date.timestamp()),
             'transaction_year': receipt.transaction_date.year,
             'transaction_month': receipt.transaction_date.month,
             'total_amount': float(receipt.total_amount),
@@ -332,6 +394,14 @@ class ReceiptChunker:
             'categories': list(set(item.category.value for item in receipt.items if item.category)),
             'filename': receipt.filename,
         }
+        if receipt.card_network:
+            metadata['card_network'] = receipt.card_network
+        if receipt.card_last4:
+            metadata['card_last4'] = receipt.card_last4
+        if receipt.merchant_city:
+            metadata['merchant_city'] = receipt.merchant_city
+        if receipt.merchant_state:
+            metadata['merchant_state'] = receipt.merchant_state
         
         # Only add optional fields if they have values (Pinecone rejects null)
         if receipt.merchant_address:
@@ -384,15 +454,31 @@ class ReceiptChunker:
             'receipt_id': receipt.receipt_id,
             'payment_method': receipt.payment_method.value,
             'merchant_name': receipt.merchant_name,
+            'merchant_name_norm': self._normalize_merchant_name(receipt.merchant_name),
             'transaction_date': receipt.transaction_date.isoformat(),
+            'transaction_ts': int(receipt.transaction_date.timestamp()),
             'transaction_year': receipt.transaction_date.year,
             'transaction_month': receipt.transaction_date.month,
             'total_amount': float(receipt.total_amount),
             'has_tip': receipt.tip_amount is not None,
             'has_discounts': receipt.discounts is not None,
             'has_loyalty_program': receipt.loyalty_program is not None,
+            'has_delivery_fee': receipt.delivery_fee is not None,
+            'is_return': receipt.return_transaction,
+            'has_warranty': receipt.has_warranty,
             'filename': receipt.filename,
         }
+        if receipt.card_network:
+            metadata['card_network'] = receipt.card_network
+        if receipt.card_last4:
+            metadata['card_last4'] = receipt.card_last4
+        if receipt.tip_amount is not None:
+            metadata['tip_amount'] = float(receipt.tip_amount)
+        if receipt.discounts is not None:
+            metadata['discounts'] = float(receipt.discounts)
+
+        if receipt.delivery_fee is not None:
+            metadata['delivery_fee'] = float(receipt.delivery_fee)
         
         return ReceiptChunk(
             chunk_id=str(uuid.uuid4()),

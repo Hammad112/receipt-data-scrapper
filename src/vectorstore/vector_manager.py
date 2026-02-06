@@ -14,7 +14,6 @@ from typing import List, Dict, Any, Optional
 from datetime import datetime
 
 from openai import OpenAI
-from pinecone import Pinecone, ServerlessSpec
 from dotenv import load_dotenv
 
 try:
@@ -23,6 +22,15 @@ try:
 except ImportError:
     from models import ReceiptChunk
     from utils.logging_config import logger
+
+try:
+    from pinecone import Pinecone, ServerlessSpec
+    _PINECONE_SDK = "pinecone"
+except Exception:
+    Pinecone = None
+    ServerlessSpec = None
+    import pinecone
+    _PINECONE_SDK = "pinecone-client"
 
 
 class VectorManager:
@@ -47,13 +55,24 @@ class VectorManager:
         # Pinecone Config
         self.pinecone_api_key = os.getenv('PINECONE_API_KEY')
         self.index_name = os.getenv('PINECONE_INDEX_NAME', 'receipt-index')
-        
-        self.pc = Pinecone(api_key=self.pinecone_api_key)
-        self.index = self._get_or_create_index()
+
+        if not self.pinecone_api_key:
+            raise ValueError("PINECONE_API_KEY is required")
+
+        if _PINECONE_SDK == "pinecone":
+            self.pc = Pinecone(api_key=self.pinecone_api_key)
+            self.index = self._get_or_create_index_pinecone()
+        else:
+            self.pc = None
+            pinecone_env = os.getenv("PINECONE_ENVIRONMENT") or os.getenv("PINECONE_ENV")
+            if not pinecone_env:
+                raise ValueError("PINECONE_ENVIRONMENT is required for pinecone-client")
+            pinecone.init(api_key=self.pinecone_api_key, environment=pinecone_env)
+            self.index = self._get_or_create_index_pinecone_client()
         
         logger.info(f"VectorManager initialized with index: {self.index_name}")
 
-    def _get_or_create_index(self):
+    def _get_or_create_index_pinecone(self):
         """
         Retrieves the existing Pinecone index or creates a new one if it doesn't exist.
         
@@ -76,10 +95,46 @@ class VectorManager:
                     )
                 )
                 logger.info(f"Successfully created Pinecone index: {self.index_name}")
-                return self.pc.Index(self.index_name)
+                index = self.pc.Index(self.index_name)
+                self._wait_for_index_ready(index)
+                return index
         except Exception as e:
             logger.error(f"Critical error initializing Pinecone: {e}")
             raise
+
+    def _get_or_create_index_pinecone_client(self):
+        try:
+            existing = pinecone.list_indexes()
+            if self.index_name in existing:
+                logger.debug(f"Connecting to existing Pinecone index: {self.index_name}")
+                return pinecone.Index(self.index_name)
+
+            logger.warning(f"Index {self.index_name} not found. Creating new index...")
+            pod_type = os.getenv("PINECONE_POD_TYPE", "s1.x1")
+            pinecone.create_index(
+                name=self.index_name,
+                dimension=1536,
+                metric="cosine",
+                pods=1,
+                replicas=1,
+                pod_type=pod_type,
+            )
+            index = pinecone.Index(self.index_name)
+            self._wait_for_index_ready(index)
+            return index
+        except Exception as e:
+            logger.error(f"Critical error initializing Pinecone (pinecone-client): {e}")
+            raise
+
+    def _wait_for_index_ready(self, index, timeout_seconds: int = 180):
+        start = time.time()
+        while time.time() - start < timeout_seconds:
+            try:
+                _ = index.describe_index_stats()
+                return
+            except Exception:
+                time.sleep(2)
+        raise TimeoutError(f"Timed out waiting for Pinecone index to be ready: {self.index_name}")
 
     def generate_embedding(self, text: str) -> List[float]:
         """
@@ -101,6 +156,19 @@ class VectorManager:
             logger.error(f"Failed to generate embedding: {e}")
             raise
 
+    def generate_embeddings(self, texts: List[str]) -> List[List[float]]:
+        if not texts:
+            return []
+        try:
+            response = self.openai_client.embeddings.create(
+                model=self.embedding_model,
+                input=texts
+            )
+            return [item.embedding for item in response.data]
+        except Exception as e:
+            logger.error(f"Failed to generate embeddings: {e}")
+            raise
+
     def index_chunks(self, chunks: List[ReceiptChunk], batch_size: int = 50) -> int:
         """
         Indexes a list of receipt chunks in the vector database.
@@ -119,13 +187,16 @@ class VectorManager:
         
         indexed_count = 0
         logger.info(f"Starting batch indexing: {len(chunks)} chunks, batch size {batch_size}")
+        total_batches = (len(chunks) + batch_size - 1) // batch_size
         
         for i in range(0, len(chunks), batch_size):
             batch = chunks[i:i + batch_size]
             try:
+                batch_num = i // batch_size + 1
+                logger.info(f"Indexing batch {batch_num}/{total_batches} ({len(batch)} chunks)")
                 vectors = []
-                for chunk in batch:
-                    embedding = self.generate_embedding(chunk.content)
+                embeddings = self.generate_embeddings([chunk.content for chunk in batch])
+                for chunk, embedding in zip(batch, embeddings):
                     vectors.append({
                         'id': chunk.chunk_id,
                         'values': embedding,
@@ -142,6 +213,8 @@ class VectorManager:
                 logger.debug(f"Indexed batch {i//batch_size + 1}/{len(chunks)//batch_size + 1}")
                 
             except Exception as e:
+                if "terminated" in str(e).lower():
+                    raise
                 logger.error(f"Error indexing batch {i//batch_size + 1}: {e}")
                 continue
         
@@ -192,8 +265,8 @@ class VectorManager:
             stats = self.index.describe_index_stats()
             return {
                 'total_vector_count': stats['total_vector_count'],
-                'dimension': stats['dimension'],
-                'index_fullness': stats['index_fullness'],
+                'dimension': stats.get('dimension', 1536) if isinstance(stats, dict) else 1536,
+                'index_fullness': stats.get('index_fullness', 0.0) if isinstance(stats, dict) else 0.0,
                 'namespaces': stats.get('namespaces', {}),
             }
         except Exception as e:
@@ -206,27 +279,61 @@ class VectorManager:
         """
         try:
             logger.warning(f"DELETING INDEX: {self.index_name}")
-            self.pc.delete_index(self.index_name)
-            
-            while self.index_name in [idx.name for idx in self.pc.list_indexes()]:
-                logger.debug("Waiting for index deletion...")
-                time.sleep(2)
-            
-            logger.info(f"Recreating index: {self.index_name}")
-            self.pc.create_index(
-                name=self.index_name,
-                dimension=1536,
-                metric='cosine',
-                spec=ServerlessSpec(
-                    cloud='aws',
-                    region='us-east-1'
+            if _PINECONE_SDK == "pinecone":
+                self.pc.delete_index(self.index_name)
+                while self.index_name in self.pc.list_indexes().names():
+                    time.sleep(2)
+                self.pc.create_index(
+                    name=self.index_name,
+                    dimension=1536,
+                    metric='cosine',
+                    spec=ServerlessSpec(
+                        cloud='aws',
+                        region='us-east-1'
+                    )
                 )
-            )
-            self.index = self.pc.Index(self.index_name)
-            logger.info("Index successfully rebuilt.")
+                self.index = self.pc.Index(self.index_name)
+                self._wait_for_index_ready(self.index)
+            else:
+                pinecone.delete_index(self.index_name)
+                while self.index_name in pinecone.list_indexes():
+                    time.sleep(2)
+                pod_type = os.getenv("PINECONE_POD_TYPE", "s1.x1")
+                pinecone.create_index(
+                    name=self.index_name,
+                    dimension=1536,
+                    metric="cosine",
+                    pods=1,
+                    replicas=1,
+                    pod_type=pod_type,
+                )
+                self.index = pinecone.Index(self.index_name)
+                self._wait_for_index_ready(self.index)
         except Exception as e:
             logger.error(f"Rebuild failed: {e}")
             raise
+
+    def clear_index(self, timeout_seconds: int = 180):
+        try:
+            self.index.delete(delete_all=True)
+        except Exception as e:
+            message = str(e).lower()
+            if "namespace not found" in message:
+                return
+            if "terminated" in message:
+                logger.warning(f"Index terminated; rebuilding instead: {e}")
+                self.rebuild_index()
+                return
+            logger.warning(f"Failed to clear index with delete_all: {e}")
+            raise
+
+        start = time.time()
+        while time.time() - start < timeout_seconds:
+            stats = self.get_index_stats()
+            if stats.get('total_vector_count', 0) == 0:
+                return
+            time.sleep(2)
+        raise TimeoutError(f"Timed out waiting for index to clear: {self.index_name}")
 
     def delete_by_receipt_id(self, receipt_id: str) -> bool:
         """
@@ -239,4 +346,3 @@ class VectorManager:
         except Exception as e:
             logger.error(f"Delete failed for receipt_id {receipt_id}: {e}")
             return False
-

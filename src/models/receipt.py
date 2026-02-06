@@ -71,16 +71,22 @@ class Receipt(BaseModel):
     merchant_name: str
     transaction_date: datetime
     payment_method: PaymentMethod
+    card_network: Optional[str] = None
+    card_last4: Optional[str] = None
     items: List[ReceiptItem] = Field(default_factory=list)
     subtotal: Decimal = Field(default=Decimal('0'))
     tax_amount: Decimal = Field(default=Decimal('0'))
     tip_amount: Optional[Decimal] = None
+    delivery_fee: Optional[Decimal] = None
     total_amount: Decimal = Field(default=Decimal('0'))
     discounts: Optional[Decimal] = None
     raw_text: str
     
     # Additional metadata fields
     merchant_address: Optional[str] = None
+    merchant_city: Optional[str] = None
+    merchant_state: Optional[str] = None
+    merchant_zip: Optional[str] = None
     merchant_phone: Optional[str] = None
     merchant_website: Optional[str] = None
     cashier: Optional[str] = None
@@ -89,6 +95,8 @@ class Receipt(BaseModel):
     transaction_id: Optional[str] = None
     store_number: Optional[str] = None
     loyalty_program: Optional[str] = None
+    has_warranty: bool = False
+    warranty_text: Optional[str] = None
     return_transaction: bool = False
     
     @field_validator('total_amount')
@@ -99,11 +107,14 @@ class Receipt(BaseModel):
             subtotal = data.get('subtotal', Decimal('0'))
             tax_amount = data.get('tax_amount', Decimal('0'))
             tip_amount = data.get('tip_amount', Decimal('0'))
+            delivery_fee = data.get('delivery_fee', Decimal('0'))
             discounts = data.get('discounts', Decimal('0'))
             
             calculated_total = subtotal + tax_amount
             if tip_amount:
                 calculated_total += tip_amount
+            if delivery_fee:
+                calculated_total += delivery_fee
             if discounts:
                 calculated_total -= discounts
             

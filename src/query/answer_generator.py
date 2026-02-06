@@ -19,13 +19,57 @@ class AnswerGenerator:
     """
     
     def __init__(self, openai_client: OpenAI):
+        """Initializes the generator with a pre-configured OpenAI client."""
+        self.openai_client = openai_client
+
+    def generate_answer(self, query: str, search_results: List[Dict[str, Any]]) -> Dict[str, Any]:
         """
-        Initializes the generator with an OpenAI client.
+        Main entry point for generating a grounded answer.
         
         Args:
-            openai_client: Authenticated OpenAI client.
+            query: User's original natural language question.
+            search_results: Chunks retrieved from the vector database.
+            
+        Returns:
+            Dict containing the 'answer' string and 'sources' list.
         """
-        self.openai_client = openai_client
+        # Prepare context by extracting useful content from results
+        context_str = ""
+        sources = []
+        for i, res in enumerate(search_results[:10]): # Limit to top 10 for context window
+            meta = res.get('metadata', {})
+            content = meta.get('content', '')
+            fname = meta.get('filename', 'Unknown')
+            context_str += f"[{i+1}] {content} (Source: {fname})\n\n"
+            if fname not in sources:
+                sources.append(fname)
+
+        prompt = f"""You are a professional financial assistant. 
+Use the following receipt context to answer the user's question. 
+If the answer isn't in the context, say you don't know based on the provided data.
+DO NOT hallucinate facts or merchants not present in the context.
+
+Context:
+{context_str}
+
+Question: {query}
+
+Answer strictly based on the context above:"""
+
+        try:
+            response = self.openai_client.chat.completions.create(
+                model="gpt-3.5-turbo",
+                messages=[
+                    {"role": "system", "content": "You are a helpful receipt data assistant."},
+                    {"role": "user", "content": prompt}
+                ],
+                temperature=0
+            )
+            answer = response.choices[0].message.content.strip()
+            return {'answer': answer, 'sources': sources}
+        except Exception as e:
+            logger.error(f"LLM Generation failed: {e}")
+            return {'answer': f"I found the data but encountered an error generating a natural language response. (Found {len(search_results)} matching records)", 'sources': sources}
 
     def generate(self, query: str, results: Dict[str, Any], query_params: Dict[str, Any]) -> str:
         """
@@ -71,11 +115,13 @@ class AnswerGenerator:
 Grounding Data Found:
 - Items Matching: {context['items_count']}
 - Receipts Matching: {context['receipts_count']}
-- Total Calculated Value: ${context['total_amount']:.2f}
 """
-        if context['aggregations']:
-            prompt += f"- Aggregated Insights: {context['aggregations']}\n"
-            
+        # Inject audited/verified totals strictly
+        if context.get('aggregations') and 'value' in context['aggregations']:
+            val = context['aggregations']['value']
+            agg_type = query_params.get('aggregation', 'total')
+            prompt += f"- VERIFIED {agg_type.upper()} (Audited): ${val:.2f}\n"
+
         if context['receipts']:
             prompt += "\nTop Relevant Receipts:\n"
             for r in context['receipts'][:5]:
@@ -88,7 +134,7 @@ Grounding Data Found:
             for item in context['items']:
                 prompt += f"- {item.get('name')} (${item.get('price', 0):.2f}) at {item.get('merchant')} on {item.get('date')} [{item.get('payment_method')}]\n"
                 
-        prompt += "\nInstructions: Provide a structured, professional response. If specific merchants or items are found, name them. If a total is asked for, state it clearly."
+        prompt += "\nInstructions: Provide a structured, professional response. If a VERIFIED sum/average is provided above, use that EXACT figure in your answer. Do not perform your own math if an audited figure is available."
         return prompt
 
     def _generate_fallback(self, context: Dict[str, Any], query_params: Dict[str, Any]) -> str:

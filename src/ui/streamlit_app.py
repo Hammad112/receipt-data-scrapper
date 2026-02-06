@@ -236,7 +236,6 @@ def apply_custom_styles():
             /* Hide Streamlit elements */
             #MainMenu {visibility: hidden;}
             footer {visibility: hidden;}
-            header {visibility: hidden;}
         </style>
     """, unsafe_allow_html=True)
 
@@ -328,19 +327,6 @@ def auto_process_receipts_from_folder():
     elif not needs_indexing:
         st.success(f"Dashboard synced with {len(all_receipts)} local receipts. Vector index is ready.")
 
-    # Index chunks
-    if all_chunks:
-        try:
-            print("📤 Indexing chunks to Pinecone...")
-            with st.spinner(f"Indexing {len(all_chunks)} chunks..."):
-                st.session_state.vector_manager.index_chunks(all_chunks, batch_size=50)
-                st.session_state.receipts_processed.extend(all_receipts)
-            print(" Indexing complete!")
-            st.success(f" Successfully indexed {len(all_chunks)} chunks from {len(all_receipts)} receipts!")
-        except Exception as e:
-            print(f" Error indexing chunks: {e}")
-            st.error(f"Error indexing chunks: {e}")
-
 
 def render_sidebar():
     """Render the sidebar with controls and information."""
@@ -415,7 +401,8 @@ def render_quick_starts():
     cols = st.columns(4)
     for i, (label, query) in enumerate(queries):
         if cols[i % 4].button(label, use_container_width=True, key=f"btn_quick_{i}"):
-            st.session_state.current_query = query
+            # Set a trigger to update the main input in the next rerun
+            st.session_state.suggestion_trigger = query
             st.rerun()
 
 
@@ -425,6 +412,11 @@ def render_quick_starts():
 def render_query_section():
     """Render the enhanced query interface."""
     
+    # 0. Check for suggestion triggers before rendering any widgets
+    if st.session_state.get('suggestion_trigger'):
+        st.session_state.query_input_main = st.session_state.suggestion_trigger
+        del st.session_state.suggestion_trigger
+
     # 1. Input Section at the top
     st.markdown("### 🔎 Search Receipts")
     query_col, clear_col = st.columns([5, 1])
@@ -450,14 +442,6 @@ def render_query_section():
     if query and query != st.session_state.get('last_query', ''):
         st.session_state.last_query = query
         execute_query(query)
-        st.rerun()
-
-    # Handle sample query from trigger
-    query_trigger = st.session_state.get('current_query', None)
-    if query_trigger:
-        st.session_state.last_query = query_trigger
-        execute_query(query_trigger)
-        del st.session_state.current_query
         st.rerun()
 
     # 4. Results / Chat History Section

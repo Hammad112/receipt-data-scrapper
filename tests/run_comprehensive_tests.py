@@ -1,10 +1,8 @@
-
 import os
 import sys
 import json
 from datetime import datetime
 from decimal import Decimal
-import pandas as pd
 
 # Add source directory to path
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'src'))
@@ -12,6 +10,8 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'src'))
 from dotenv import load_dotenv
 from vectorstore import VectorManager
 from query import QueryEngine
+from parsers import ReceiptParser
+from chunking import ReceiptChunker
 
 # Validation targets based on user request (50 queries)
 TEST_QUERIES = [
@@ -77,7 +77,7 @@ TEST_QUERIES = [
 ]
 
 def run_tests():
-    print("🚀 Starting Comprehensive 50-Query Accuracy Tests...")
+    print(" Starting Comprehensive 50-Query Accuracy Tests...")
     
     # Initialize system
     load_dotenv()
@@ -89,15 +89,72 @@ def run_tests():
         print(f" Failed to initialize system: {e}")
         return
 
+    project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+    data_dir = os.path.join(project_root, 'data', 'receipt_samples_100')
+    if not os.path.isdir(data_dir):
+        print(f" Data directory not found: {data_dir}")
+        return
+
+    receipt_files = sorted([
+        os.path.join(data_dir, f) for f in os.listdir(data_dir)
+        if f.lower().endswith('.txt') and f.lower().startswith('receipt_')
+    ])
+    if not receipt_files:
+        print(f" No receipt .txt files found in: {data_dir}")
+        return
+
+    print(f"\n Resetting Pinecone index and indexing {len(receipt_files)} receipts from: {data_dir}")
+    try:
+        vm.clear_index()
+    except Exception as e:
+        print(f" Failed to reset Pinecone index: {e}")
+        return
+
+    parser = ReceiptParser()
+    chunker = ReceiptChunker()
+    all_chunks = []
+    max_txn_date = None
+    for file_path in receipt_files:
+        try:
+            with open(file_path, 'r', encoding='utf-8') as f:
+                text = f.read()
+            receipt = parser.parse_receipt(text, filename=os.path.basename(file_path))
+            if max_txn_date is None or receipt.transaction_date > max_txn_date:
+                max_txn_date = receipt.transaction_date
+            all_chunks.extend(chunker.chunk_receipt(receipt))
+        except Exception as e:
+            print(f" Failed to parse/chunk {os.path.basename(file_path)}: {e}")
+            continue
+
+    if not all_chunks:
+        print(" No chunks produced; aborting tests.")
+        return
+
+    indexed = vm.index_chunks(all_chunks, batch_size=10)
+    print(f" Indexed {indexed}/{len(all_chunks)} chunks.")
+    if max_txn_date:
+        os.environ["RECEIPT_REFERENCE_DATE"] = max_txn_date.date().strftime("%Y%m%d")
+        print(f" Using RECEIPT_REFERENCE_DATE={os.environ['RECEIPT_REFERENCE_DATE']} for relative date queries")
+
     results = []
+    report_path = os.path.join(os.path.dirname(__file__), 'query_accuracy_report_50.md')
+    generated_at = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    with open(report_path, 'w', encoding='utf-8') as f:
+        f.write("#  50-Query Comprehensive Validation Report\n")
+        f.write(f"Generated: {generated_at}\n\n")
+        f.write("## 🎯 Test Summary\n")
+        f.write(f"- Total Queries: {len(TEST_QUERIES)}\n")
+        f.write(f"- Traceability: Citations included for original .txt files\n")
+        f.write(f"- Coverage: Temporal, Merchant, Category, Semantic, Cost, Features\n\n")
+        f.write("## Detailed Results\n\n")
     
-    print(f"\n📋 Running {len(TEST_QUERIES)} test queries...\n")
+    print(f"\n Running {len(TEST_QUERIES)} test queries...\n")
     
     for i, query in enumerate(TEST_QUERIES):
         print(f"🔹 [{i+1}/50] Testing: '{query}'")
         try:
             start_time = datetime.now()
-            result = engine.process_query(query)
+            result = engine.query(query)
             duration = (datetime.now() - start_time).total_seconds()
             
             # Collect matched items for verification
@@ -113,7 +170,7 @@ def run_tests():
             receipt_citations = []
             for r in result.receipts[:10]:
                 if r.get('filename'):
-                    receipt_citations.append(f"{r['merchant_name']} ({r.get('filename')})")
+                    receipt_citations.append(f"{r.get('merchant_name')} ({r.get('filename')})")
                 
             entry = {
                 "Query": query,
@@ -127,10 +184,17 @@ def run_tests():
             }
             results.append(entry)
             print(f"    Success ({len(result.items)} items, {len(result.receipts)} receipts)")
+            with open(report_path, 'a', encoding='utf-8') as f:
+                f.write(f"###  Query: \"{entry['Query']}\"\n")
+                f.write(f"- **Answer**: {entry['Answer']}\n")
+                f.write(f"- **Receipts/Files**: {entry['Citations'] if entry['Citations'] else 'N/A'}\n")
+                f.write(f"- **Sample Item Matches**: {entry['Sample Matches']}\n")
+                f.write(f"- **Stats**: {entry['Items Found']} items | {entry['Receipts Found']} receipts | {entry['Processing Time']}\n")
+                f.write("---\n")
             
         except Exception as e:
             print(f"    Failed: {e}")
-            results.append({
+            entry = {
                 "Query": query,
                 "Answer": f"ERROR: {str(e)}",
                 "Items Found": 0,
@@ -139,31 +203,34 @@ def run_tests():
                 "Processing Time": "0s",
                 "Sample Matches": "N/A",
                 "Citations": "N/A"
-            })
+            }
+            results.append(entry)
+            with open(report_path, 'a', encoding='utf-8') as f:
+                f.write(f"###  Query: \"{entry['Query']}\"\n")
+                f.write(f"- **Answer**: {entry['Answer']}\n")
+                f.write(f"- **Receipts/Files**: N/A\n")
+                f.write(f"- **Sample Item Matches**: N/A\n")
+                f.write(f"- **Stats**: 0 items | 0 receipts | 0s\n")
+                f.write("---\n")
 
-    # Generate Report
-    report_path = os.path.join(os.path.dirname(__file__), 'query_accuracy_report_50.md')
+    allow_empty = {
+        "Show me receipts from October 2023",
+        "Find any return transactions",
+    }
+    failures = [
+        r for r in results
+        if str(r.get("Answer", "")).startswith("ERROR:")
+        or (
+            r.get("Query") not in allow_empty
+            and (r.get("Items Found", 0) == 0 and r.get("Receipts Found", 0) == 0)
+        )
+    ]
+    with open(report_path, 'a', encoding='utf-8') as f:
+        f.write("\n## Run Summary\n")
+        f.write(f"- Completed: {len(results)}/{len(TEST_QUERIES)}\n")
+        f.write(f"- Failures (0 items and 0 receipts, or error): {len(failures)}\n")
     
-    with open(report_path, 'w', encoding='utf-8') as f:
-        f.write("#  50-Query Comprehensive Validation Report\n")
-        f.write(f"Generated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n\n")
-        
-        f.write("## 🎯 Test Summary\n")
-        f.write(f"- Total Queries: {len(TEST_QUERIES)}\n")
-        f.write(f"- Traceability: Citations included for original .txt files\n")
-        f.write(f"- Coverage: Temporal, Merchant, Category, Semantic, Cost, Features\n\n")
-        
-        f.write("## 📝 Detailed Results\n\n")
-        
-        for res in results:
-            f.write(f"###  Query: \"{res['Query']}\"\n")
-            f.write(f"- **Answer**: {res['Answer']}\n")
-            f.write(f"- **Receipts/Files**: {res['Citations'] if res['Citations'] else 'N/A'}\n")
-            f.write(f"- **Sample Item Matches**: {res['Sample Matches']}\n")
-            f.write(f"- **Stats**: {res['Items Found']} items | {res['Receipts Found']} receipts | {res['Processing Time']}\n")
-            f.write("---\n")
-            
-    print(f"\n 50-Query tests complete. Final report generated at: {report_path}")
+    print(f"\n 50-Query tests complete. Report generated at: {report_path}")
 
 if __name__ == "__main__":
     run_tests()
