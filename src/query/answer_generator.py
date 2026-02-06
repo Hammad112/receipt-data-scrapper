@@ -22,90 +22,61 @@ class AnswerGenerator:
         """Initializes the generator with a pre-configured OpenAI client."""
         self.openai_client = openai_client
 
-    def generate_answer(self, query: str, search_results: List[Dict[str, Any]]) -> Dict[str, Any]:
+    def generate_answer(self, query: str, search_results: List[Dict[str, Any]], query_params: Dict[str, Any] = None) -> Dict[str, Any]:
         """
         Main entry point for generating a grounded answer.
+        Uses a structured context preparation and prompt generation flow.
+        """
+        query_params = query_params or {}
         
-        Args:
-            query: User's original natural language question.
-            search_results: Chunks retrieved from the vector database.
-            
-        Returns:
-            Dict containing the 'answer' string and 'sources' list.
-        """
-        # Prepare context by extracting useful content from results
-        context_str = ""
-        sources = []
-        for i, res in enumerate(search_results[:10]): # Limit to top 10 for context window
-            meta = res.get('metadata', {})
-            content = meta.get('content', '')
-            fname = meta.get('filename', 'Unknown')
-            context_str += f"[{i+1}] {content} (Source: {fname})\n\n"
-            if fname not in sources:
-                sources.append(fname)
-
-        prompt = f"""You are a professional financial assistant. 
-Use the following receipt context to answer the user's question. 
-If the answer isn't in the context, say you don't know based on the provided data.
-DO NOT hallucinate facts or merchants not present in the context.
-
-Context:
-{context_str}
-
-Question: {query}
-
-Answer strictly based on the context above:"""
-
-        try:
-            response = self.openai_client.chat.completions.create(
-                model="gpt-3.5-turbo",
-                messages=[
-                    {"role": "system", "content": "You are a helpful receipt data assistant."},
-                    {"role": "user", "content": prompt}
-                ],
-                temperature=0
-            )
-            answer = response.choices[0].message.content.strip()
-            return {'answer': answer, 'sources': sources}
-        except Exception as e:
-            logger.error(f"LLM Generation failed: {e}")
-            return {'answer': f"I found the data but encountered an error generating a natural language response. (Found {len(search_results)} matching records)", 'sources': sources}
-
-    def generate(self, query: str, results: Dict[str, Any], query_params: Dict[str, Any]) -> str:
-        """
-        Orchestrates prompt creation and LLM completion.
-        """
-        context = self._prepare_context(query, results)
+        # 1. Prepare Grounding Context
+        context = self._prepare_context(query, search_results, query_params)
+        
+        # 2. Create Grounded Prompt
         prompt = self._create_prompt(context, query_params)
         
+        # 3. Generate LLM Answer
         try:
-            logger.debug(f"Sending prompt to OpenAI for query: {query}")
+            logger.debug(f"Generating LLM answer for query: {query}")
             response = self.openai_client.chat.completions.create(
                 model="gpt-3.5-turbo",
                 messages=[
                     {"role": "system", "content": "You are a professional financial assistant specialized in receipt data analysis. Be precise, concise, and helpful."},
                     {"role": "user", "content": prompt}
                 ],
-                max_tokens=250,
+                max_tokens=350,
                 temperature=0
             )
             answer = response.choices[0].message.content.strip()
-            logger.info("Successfully generated natural language answer.")
-            return answer
+            
+            # Extract source filenames
+            sources = list(set([r.get('filename') for r in context['receipts'] if r.get('filename')]))
+            
+            return {'answer': answer, 'sources': sources}
         except Exception as e:
-            logger.error(f"LLM Answer Generation failed: {e}")
-            return self._generate_fallback(context, query_params)
+            logger.error(f"LLM Generation failed: {e}")
+            fallback = self._generate_fallback(context, query_params)
+            return {'answer': fallback, 'sources': []}
 
-    def _prepare_context(self, query: str, results: Dict[str, Any]) -> Dict[str, Any]:
-        """Formats search results into a context dictionary for the prompting engine."""
+    def _prepare_context(self, query: str, results: List[Dict[str, Any]], query_params: Dict[str, Any]) -> Dict[str, Any]:
+        """Formats search results and metadata into a context dictionary."""
+        unique_receipts = {}
+        items = []
+        for r in results:
+            meta = r.get('metadata', {})
+            rid = meta.get('receipt_id')
+            if rid and rid not in unique_receipts:
+                unique_receipts[rid] = meta
+            if meta.get('chunk_type') == 'item_detail':
+                items.append(meta)
+                
         return {
             'query': query,
-            'items_count': len(results.get('items', [])),
-            'receipts_count': len(results.get('receipts', [])),
-            'total_amount': results.get('total_amount', 0),
-            'aggregations': results.get('aggregations', {}),
-            'receipts': results.get('receipts', []),
-            'items': results.get('items', [])[:10]  # Limit sample size
+            'items_count': len(items),
+            'receipts_count': len(unique_receipts),
+            'receipts': list(unique_receipts.values()),
+            'items': items[:15], # Limit sample size for context window
+            'aggregations': query_params.get('audited_aggregation', {})
         }
 
     def _create_prompt(self, context: Dict[str, Any], query_params: Dict[str, Any]) -> str:
@@ -139,8 +110,12 @@ Grounding Data Found:
 
     def _generate_fallback(self, context: Dict[str, Any], query_params: Dict[str, Any]) -> str:
         """Simple template-based answer for when LLM is unavailable."""
-        count = context['items_count']
-        total = context['total_amount']
+        count = context['receipts_count']
         if count == 0:
             return "Reviewing your files, I couldn't find any data matching that specific query."
-        return f"I found {count} relevant entries totaling ${total:.2f} in your account records."
+            
+        agg = context.get('aggregations')
+        if agg and 'value' in agg:
+            return f"I found {count} relevant receipts with a verified calculated value of ${agg['value']:.2f}."
+            
+        return f"I found {count} relevant receipts matching your request in your records."

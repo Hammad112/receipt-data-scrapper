@@ -142,7 +142,7 @@ class QueryParser:
                 params['merchants'] = llm_params['merchants']
             if llm_params.get('date_range') and not params.get('date_range'):
                 params['date_range'] = llm_params['date_range']
-            if llm_params.get('aggregation') and not params.get('aggregation'):
+            if llm_params.get('aggregation') in ['sum', 'average', 'count'] and not params.get('aggregation'):
                 params['aggregation'] = llm_params['aggregation']
 
         # 3. Final Logic Resolution

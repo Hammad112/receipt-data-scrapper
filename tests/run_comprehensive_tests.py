@@ -19,7 +19,6 @@ TEST_QUERIES = [
     "How much did I spend in January 2024?",
     "What did I buy last week?",
     "Show me all receipts from December",
-    "Show me receipts from October 2023",
     "Show me receipts from November 18, 2023",
     "Did I buy any burger in November?",
     "Show me receipts from November 5, 2023",

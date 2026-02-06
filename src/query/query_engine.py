@@ -77,14 +77,19 @@ class QueryEngine:
                 metadata=query_params
             )
 
-        # 4. Generate grounded answer
-        answer_data = self.generator.generate_answer(query_text, search_results)
-        
-        # 5. Semantic verification (Aggregation)
+        # 4. Semantic verification (Aggregation Audit)
+        audit_result = None
         if query_params.get('aggregation'):
             audit_result = self._perform_aggregation_audit(query_params, search_results)
             if audit_result:
-                answer_data['answer'] += f"\n\n(Verified Sum: ${audit_result['value']:.2f} across {audit_result['count']} entries)"
+                query_params['audited_aggregation'] = audit_result
+
+        # 5. Generate grounded answer (Injecting audited data)
+        answer_data = self.generator.generate_answer(query_text, search_results, query_params)
+        
+        if audit_result and 'value' in audit_result:
+             # Append verification badge to the answer
+             answer_data['answer'] += f"\n\n(Verified Sum: ${audit_result['value']:.2f} across {audit_result['count']} entries)"
 
         # Process results into receipts/items lists for the QueryResult object
         receipts = []
