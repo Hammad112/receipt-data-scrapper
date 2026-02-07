@@ -58,31 +58,9 @@ class QueryParser:
         # Use semantic merchant matcher
         merchants = self.merchant_matcher.extract_merchants(query)
         
-        # Filter out temporal terms that might be mistaken as merchants
-        # (e.g., "January" extracted from "in January")
-        temporal_terms = {
-            'january', 'jan', 'february', 'feb', 'march', 'mar', 'april', 'apr',
-            'may', 'june', 'jun', 'july', 'jul', 'august', 'aug', 'september', 
-            'sep', 'sept', 'october', 'oct', 'november', 'nov', 'december', 'dec',
-            'today', 'yesterday', 'tomorrow', 'week', 'month', 'year'
-        }
+        # Filter out patterns that look like dates (e.g., "December 2023")
         
-        # Also filter out patterns that look like dates (e.g., "December 2023")
-        import re
-        date_pattern = re.compile(r'\b(?:january|february|march|april|may|june|july|august|september|october|november|december|jan|feb|mar|apr|jun|jul|aug|sep|sept|oct|nov|dec)\s+\d{4}\b', re.I)
-        
-        filtered_merchants = []
-        for m in merchants:
-            m_lower = m.lower()
-            # Skip if it's a temporal term
-            if m_lower in temporal_terms:
-                continue
-            # Skip if it looks like a date (Month YYYY)
-            if date_pattern.match(m):
-                continue
-            filtered_merchants.append(m)
-        
-        merchants = filtered_merchants
+        merchants = self._filter_merchants(merchants)
         
         if merchants: params['merchants'] = merchants
         
@@ -107,7 +85,54 @@ class QueryParser:
 
         # 6. Final Derivations
         params['sum_basis'] = self._derive_sum_basis(params)
+        # 6. Final Derivations
+        params['sum_basis'] = self._derive_sum_basis(params)
         return params
+
+    def _filter_merchants(self, merchants: List[str]) -> List[str]:
+        """
+        Applies rigorous filtering to remove temporal terms, categories, 
+        and date-like patterns from merchant lists.
+        """
+        if not merchants: return []
+        
+        # Filter out temporal terms that might be mistaken as merchants
+        temporal_terms = {
+            'january', 'jan', 'february', 'feb', 'march', 'mar', 'april', 'apr',
+            'may', 'june', 'jun', 'july', 'jul', 'august', 'aug', 'september', 
+            'sep', 'sept', 'october', 'oct', 'november', 'nov', 'december', 'dec',
+            'today', 'yesterday', 'tomorrow', 'week', 'month', 'year'
+        }
+        
+        # Filter out category terms that should not be treated as merchants
+        category_terms = {
+            'coffee shops', 'coffee shop', 'restaurants', 'restaurant',
+            'groceries', 'grocery', 'electronics', 'pharmacy', 'pharmacies',
+            'treats', 'desserts', 'fast food', 'health', 'shopping', 'store'
+        }
+        
+        # Filter out patterns that look like dates
+        import re
+        date_pattern = re.compile(r'\b(?:january|february|march|april|may|june|july|august|september|october|november|december|jan|feb|mar|apr|jun|jul|aug|sep|sept|oct|nov|dec)\s+\d{4}\b', re.I)
+        
+        filtered_merchants = []
+        for m in merchants:
+            m_lower = m.lower().strip()
+            if not m_lower: continue
+            
+            # Skip if it's a temporal term
+            if m_lower in temporal_terms:
+                continue
+            # Skip if it's a category term
+            if m_lower in category_terms:
+                continue
+            # Skip if it looks like a date
+            if date_pattern.match(m):
+                continue
+                
+            filtered_merchants.append(m)
+            
+        return filtered_merchants
 
     def _classify_query(self, query: str) -> str:
         """Categorizes the query intent."""
@@ -129,13 +154,22 @@ class QueryParser:
 
     def _extract_categories(self, query: str) -> List[str]:
         """Maps query terms to system categories."""
-        mappings = {
-            'coffee shops': 'coffee_shop', 'restaurants': 'restaurant', 
-            'groceries': 'groceries', 'electronics': 'electronics',
-            'pharmacy': 'pharmacy', 'health': 'pharmacy', 'treats': 'treats'
-        }
         ql = query.lower()
-        return [cat for term, cat in mappings.items() if term in ql]
+        categories = []
+        
+        # Map user-friendly terms to actual category values
+        if any(term in ql for term in ['coffee shops', 'coffee shop']):
+            categories.extend(['coffee_shop', 'fast_food'])  # Both are coffee-related
+        if any(term in ql for term in ['restaurants', 'restaurant']):
+            categories.extend(['restaurant', 'fast_food'])  # Both are dining out
+        if any(term in ql for term in ['groceries', 'grocery']):
+            categories.append('groceries')
+        if 'electronics' in ql:
+            categories.append('electronics')
+        if any(term in ql for term in ['pharmacy', 'health']):
+            categories.append('pharmacy')
+            
+        return list(set(categories))  # Remove duplicates
 
     def _extract_payment_details(self, query: str) -> Dict[str, Any]:
         """Detects payment method and card network."""
@@ -212,7 +246,12 @@ class QueryParser:
             data = json.loads(resp.choices[0].message.content)
             # Only update missing fields
             res = {}
-            if not current_params.get('merchants') and data.get('merchants'): res['merchants'] = data['merchants']
+            if not current_params.get('merchants') and data.get('merchants'): 
+                # CRITICAL: Apply the same rigorous filtering to LLM outputs
+                filtered = self._filter_merchants(data['merchants'])
+                if filtered:
+                    res['merchants'] = filtered
+                    
             if not current_params.get('date_range') and data.get('date_range'):
                 # Validate date_range has actual values, not None
                 dr = data.get('date_range')

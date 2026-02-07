@@ -47,7 +47,7 @@ QUERY_PATTERNS = {
 # Semantic mappings for expanding general terms into specific keywords
 SEMANTIC_MAPPINGS = {
     'health_related': ['pharmacy', 'health', 'medicine', 'vitamin', 'supplement'],
-    'treats': ['candy', 'chocolate', 'ice cream', 'cake', 'cookie', 'donut', 'dessert', 'sweet'],
+    'treats': ['candy', 'chocolate', 'ice cream', 'cake', 'cookie', 'donut', 'dessert', 'sweet', 'pastry', 'croissant', 'muffin', 'brownie', 'snack'],
     'coffee_shops': ['coffee', 'starbucks', 'dunkin', 'cafe', 'latte', 'espresso'],
     'restaurants': ['restaurant', 'burger', 'pizza', 'sandwich', 'salad', 'pasta', 'steak'],
 }

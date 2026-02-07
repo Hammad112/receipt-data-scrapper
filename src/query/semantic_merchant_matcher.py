@@ -241,16 +241,20 @@ class SemanticMerchantMatcher:
         Return JSON format: {{"merchants": ["Merchant1", "Merchant2"]}}
 
         Rules:
-        1. Extract ONLY merchant/store/restaurant names
-        2. Do NOT extract: dates, amounts, categories, items
-        3. Normalize to proper capitalization (e.g., "walmart" → "Walmart")
-        4. If uncertain, return empty list: {{"merchants": []}}
-        5. Maximum 5 merchants per query
+        1. Extract ONLY specific merchant/store/restaurant names (e.g., "Walmart", "Starbucks", "Whole Foods Market")
+        2. Do NOT extract: dates, amounts, items, or general category terms
+        3. Do NOT extract these category terms as merchants: "coffee shops", "restaurants", "groceries", "electronics", "pharmacy", "treats", "fast food"
+        4. If the query asks about "coffee shops" or "restaurants" as a category, return empty list: {{"merchants": []}}
+        5. Normalize to proper capitalization (e.g., "walmart" → "Walmart")
+        6. If uncertain, return empty list: {{"merchants": []}}
+        7. Maximum 5 merchants per query
 
         Examples:
         - "How much at Walmart?" → {{"merchants": ["Walmart"]}}
         - "Starbucks and Target receipts" → {{"merchants": ["Starbucks", "Target"]}}
-        - "grocery spending in December" → {{"merchants": []}}
+        - "spending at coffee shops" → {{"merchants": []}}  # Category term, not a specific merchant
+        - "restaurant spending in December" → {{"merchants": []}}  # Category term, not a specific merchant
+        - "grocery spending" → {{"merchants": []}}  # Category term, not a specific merchant
         - "that coffee place in SF" → {{"merchants": ["Starbucks"]}}  # Inference OK if confident
         """
         
@@ -289,13 +293,26 @@ class SemanticMerchantMatcher:
         - Remove duplicates (case-insensitive)
         - Proper capitalization
         - Remove common suffixes
+        - Filter out category terms
         """
+        # Category terms that should never be treated as merchants
+        category_terms = {
+            'coffee shops', 'coffee shop', 'restaurants', 'restaurant',
+            'groceries', 'grocery', 'grocery store', 'electronics', 'electronic',
+            'pharmacy', 'pharmacies', 'treats', 'desserts', 'fast food', 'health'
+        }
+        
         normalized = []
         seen = set()
         
         for merchant in merchants:
             # Skip empty
             if not merchant or len(merchant.strip()) < 2:
+                continue
+            
+            # Skip category terms
+            if merchant.lower() in category_terms:
+                logger.debug(f"Filtering out category term: '{merchant}'")
                 continue
             
             # Check if already seen (normalized form)

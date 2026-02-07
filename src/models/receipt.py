@@ -31,6 +31,7 @@ class ItemCategory(str, Enum):
     """Industry-standard categories for receipt items."""
     GROCERIES = "groceries"
     RESTAURANT = "restaurant"
+    FAST_FOOD = "fast_food"
     COFFEE_SHOP = "coffee_shop"
     ELECTRONICS = "electronics"
     PHARMACY = "pharmacy"
@@ -47,7 +48,9 @@ class ReceiptItem(BaseModel):
     quantity: Decimal = Field(default=Decimal('1'))
     unit_price: Decimal
     total_price: Decimal
-    category: Optional[ItemCategory] = ItemCategory.OTHER
+    category: Optional[ItemCategory] = None  # Deprecated in favor of categories
+    categories: List[ItemCategory] = Field(default_factory=list)
+    tags: List[str] = Field(default_factory=list)
     discount: Optional[Decimal] = None
     warranty_info: Optional[str] = None
     
@@ -130,7 +133,14 @@ class Receipt(BaseModel):
     @property
     def categories(self) -> List[str]:
         """Returns a unique list of all categories present in the receipt items."""
-        return list(set(item.category.value for item in self.items if item.category))
+        all_cats = set()
+        for item in self.items:
+            # Support both old and new fields during migration
+            if item.category: 
+                all_cats.add(item.category.value)
+            for cat in item.categories:
+                all_cats.add(cat.value)
+        return list(all_cats)
 
     @property
     def is_return(self) -> bool:

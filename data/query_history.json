@@ -252,5 +252,599 @@
       ],
       "processing_time": 7.30617356300354
     }
+  },
+  {
+    "query": "Find health-related purchases",
+    "timestamp": "2026-02-07T15:50:39.028277",
+    "result": {
+      "answer": "The health-related purchases found in the context are as follows:\n\n1. **Walgreens**\n   - Multivitamin\n   - First Aid Kit\n   - Vitamin D\n   - Allergy Medicine\n\n2. **CVS/pharmacy**\n   - First Aid Kit\n   - Vitamin D\n   - Allergy Medicine\n   - Multivitamin\n\n3. **Rite Aid**\n   - Multivitamin\n   - Allergy Medicine\n   - Vitamin D\n\nThese purchases include items such as multivitamins, first aid kits, vitamin D, and allergy medicine, all categorized under pharmacy.",
+      "confidence": 0.7,
+      "receipts": [
+        {
+          "receipt_id": "f301eea7-dbbc-4b54-897e-dbed24ff69ef",
+          "merchant_name": "Walgreens",
+          "total_amount": 91.16,
+          "transaction_date": "2023-11-05T00:00:00",
+          "filename": "receipt_085_pharmacy_20231105.txt"
+        },
+        {
+          "receipt_id": "d9395b76-a393-4397-8532-80310d93899e",
+          "merchant_name": "CVS/pharmacy",
+          "total_amount": 56.37,
+          "transaction_date": "2024-01-26T00:00:00",
+          "filename": "receipt_089_pharmacy_20240126.txt"
+        },
+        {
+          "receipt_id": "d4044907-bf56-4f87-9279-a3a44d48b20e",
+          "merchant_name": "CVS/pharmacy",
+          "total_amount": 89.86,
+          "transaction_date": "2024-01-01T00:00:00",
+          "filename": "receipt_086_pharmacy_20240101.txt"
+        },
+        {
+          "receipt_id": "cce2736a-9314-4692-9a29-3951dfdd7e78",
+          "merchant_name": "CVS/pharmacy",
+          "total_amount": 41.78,
+          "transaction_date": "2024-01-16T00:00:00",
+          "filename": "receipt_088_pharmacy_20240116.txt"
+        },
+        {
+          "receipt_id": "83609766-b14d-4b28-b326-e7aeebb6890d",
+          "merchant_name": "Rite Aid",
+          "total_amount": 53.56,
+          "transaction_date": "2024-01-04T00:00:00",
+          "filename": "receipt_090_pharmacy_20240104.txt"
+        }
+      ],
+      "items": [
+        {
+          "name": "First Aid Kit",
+          "price": 34.26,
+          "category": "pharmacy",
+          "merchant": "CVS/pharmacy",
+          "filename": "receipt_086_pharmacy_20240101.txt"
+        },
+        {
+          "name": "First Aid Kit",
+          "price": 23.76,
+          "category": "pharmacy",
+          "merchant": "CVS/pharmacy",
+          "filename": "receipt_088_pharmacy_20240116.txt"
+        },
+        {
+          "name": "Vitamin D",
+          "price": 12.74,
+          "category": "pharmacy",
+          "merchant": "Rite Aid",
+          "filename": "receipt_090_pharmacy_20240104.txt"
+        },
+        {
+          "name": "First Aid Kit",
+          "price": 26.33,
+          "category": "pharmacy",
+          "merchant": "Walgreens",
+          "filename": "receipt_085_pharmacy_20231105.txt"
+        },
+        {
+          "name": "Vitamin D",
+          "price": 15.58,
+          "category": "pharmacy",
+          "merchant": "Walgreens",
+          "filename": "receipt_085_pharmacy_20231105.txt"
+        }
+      ],
+      "processing_time": 11.777303218841553
+    }
+  },
+  {
+    "query": "What's my total spending at restaurants?",
+    "timestamp": "2026-02-07T16:11:31.220657",
+    "result": {
+      "answer": "I couldn't find any receipts matching those criteria.",
+      "confidence": 0.0,
+      "receipts": [],
+      "items": [],
+      "processing_time": 5.925296306610107
+    }
+  },
+  {
+    "query": "How much have I spent at coffee shops?",
+    "timestamp": "2026-02-07T16:12:07.129044",
+    "result": {
+      "answer": "I couldn't find any receipts matching those criteria.",
+      "confidence": 0.0,
+      "receipts": [],
+      "items": [],
+      "processing_time": 4.5503764152526855
+    }
+  },
+  {
+    "query": "How much have I spent at coffee shops?",
+    "timestamp": "2026-02-07T16:28:44.317120",
+    "result": {
+      "answer": "I couldn't find any receipts matching those criteria.",
+      "confidence": 0.0,
+      "receipts": [],
+      "items": [],
+      "processing_time": 6.201787233352661
+    }
+  },
+  {
+    "query": "What's my total spending at restaurants?",
+    "timestamp": "2026-02-07T16:29:43.660591",
+    "result": {
+      "answer": "I couldn't find any receipts matching those criteria.",
+      "confidence": 0.0,
+      "receipts": [],
+      "items": [],
+      "processing_time": 3.87377667427063
+    }
+  },
+  {
+    "query": "What did I buy last week?",
+    "timestamp": "2026-02-07T16:44:04.035297",
+    "result": {
+      "answer": "Based on the receipts from last week, you purchased the following items:\n\n1. **From Nike**:\n   - Ground Beef\n   - Salmon Fillet\n   - Organic Bananas\n   - Avocados\n   - Spinach\n   - Cereal\n   - Coffee Beans\n   - Cheese Block\n   - Eggs\n\n2. **From Bed Bath & Beyond**:\n   - Rice 5lb\n   - Pasta\n   - Cheese Block\n   - Almond Milk\n   - Cereal\n   - Orange Juice\n   - Ground Beef\n   - Salmon Fillet\n\n3. **From Costco Wholesale**:\n   - Bread\n   - Rice 5lb\n   - Pasta\n   - Coffee Beans\n   - Almond Milk\n   - Eggs\n   - Cheese Block\n   - Olive Oil\n   - Organic Bananas\n   - Orange Juice\n   - Tomatoes\n   - Apples\n   - Avocados\n   - Spinach\n   - Kale Bunch",
+      "confidence": 0.7,
+      "receipts": [
+        {
+          "receipt_id": "c5e3b8e4-0492-417b-8c49-746be7b9b842",
+          "merchant_name": "Nike",
+          "total_amount": 47.72,
+          "transaction_date": "2024-01-29T00:00:00",
+          "filename": "receipt_095_retail_20240129.txt"
+        },
+        {
+          "receipt_id": "a96a0c00-865f-4d80-aa88-5cc99ddc9c68",
+          "merchant_name": "Bed Bath & Beyond",
+          "total_amount": 36.05,
+          "transaction_date": "2024-01-24T00:00:00",
+          "filename": "receipt_094_retail_20240124.txt"
+        },
+        {
+          "receipt_id": "54b9b799-aced-4359-906d-17abe1b78bd8",
+          "merchant_name": "Costco Wholesale",
+          "total_amount": 67.18,
+          "transaction_date": "2024-01-24T00:00:00",
+          "filename": "receipt_002_grocery_20240124.txt"
+        },
+        {
+          "receipt_id": "d60098b0-0862-4c67-925f-b301b9fd9e08",
+          "merchant_name": "Chevron",
+          "total_amount": 48.06,
+          "transaction_date": "2024-01-28T00:00:00",
+          "filename": "receipt_100_gas_20240128.txt"
+        },
+        {
+          "receipt_id": "7cd66f09-53f7-442c-8ea0-5b26ee7c7400",
+          "merchant_name": "CVS/pharmacy",
+          "total_amount": 120.63,
+          "transaction_date": "2024-01-26T00:00:00",
+          "filename": "receipt_089_pharmacy_20240126.txt"
+        }
+      ],
+      "items": [],
+      "processing_time": 7.5257275104522705
+    }
+  },
+  {
+    "query": "How much have I spent at coffee shops?",
+    "timestamp": "2026-02-07T16:44:10.270964",
+    "result": {
+      "answer": "I couldn't find any receipts matching those criteria.",
+      "confidence": 0.0,
+      "receipts": [],
+      "items": [],
+      "processing_time": 3.687870740890503
+    }
+  },
+  {
+    "query": "How much have I spent at coffee shops?",
+    "timestamp": "2026-02-07T16:57:39.087757",
+    "result": {
+      "answer": "I couldn't find any receipts matching those criteria.",
+      "confidence": 0.0,
+      "receipts": [],
+      "items": [],
+      "processing_time": 5.385015487670898
+    }
+  },
+  {
+    "query": "What's my total spending at restaurants?",
+    "timestamp": "2026-02-07T17:01:38.781456",
+    "result": {
+      "answer": "I couldn't find any receipts matching those criteria.",
+      "confidence": 0.0,
+      "receipts": [],
+      "items": [],
+      "processing_time": 8.08405613899231
+    }
+  },
+  {
+    "query": "How much have I spent at coffee shops?",
+    "timestamp": "2026-02-07T18:14:07.365674",
+    "result": {
+      "answer": "You have spent a total of **$294.19** at coffee shops.",
+      "confidence": 0.7,
+      "receipts": [
+        {
+          "receipt_id": "31403b08-4267-4e67-9ce6-178921cc7989",
+          "merchant_name": "Starbucks",
+          "total_amount": 81.06,
+          "transaction_date": "2023-12-05T00:00:00",
+          "filename": "receipt_053_coffee_20231205.txt"
+        },
+        {
+          "receipt_id": "84f20337-c937-4267-9811-a29a9e9468b9",
+          "merchant_name": "Starbucks",
+          "total_amount": 16.52,
+          "transaction_date": "2023-12-15T00:00:00",
+          "filename": "receipt_057_coffee_20231215.txt"
+        },
+        {
+          "receipt_id": "b9565af2-8aff-4dc7-b92d-3c2492a17fd2",
+          "merchant_name": "Peet's Coffee",
+          "total_amount": 18.72,
+          "transaction_date": "2023-12-31T00:00:00",
+          "filename": "receipt_052_coffee_20231231.txt"
+        },
+        {
+          "receipt_id": "81da7c51-67b1-4617-9c75-f3f0a6061579",
+          "merchant_name": "Starbucks",
+          "total_amount": 5.85,
+          "transaction_date": "2023-11-03T00:00:00",
+          "filename": "receipt_050_coffee_20231103.txt"
+        },
+        {
+          "receipt_id": "fb3e78ac-2a5e-4225-9dca-754317b3c5cd",
+          "merchant_name": "Philz Coffee",
+          "total_amount": 40.55,
+          "transaction_date": "2024-01-04T00:00:00",
+          "filename": "receipt_051_coffee_20240104.txt"
+        }
+      ],
+      "items": [],
+      "processing_time": 6.338151454925537
+    }
+  },
+  {
+    "query": "What's my total spending at restaurants?",
+    "timestamp": "2026-02-07T18:14:19.245155",
+    "result": {
+      "answer": "Your total spending at restaurants is **$20.70**. This amount is from the transaction at MEDITERRANEAN GRILL categorized under \"restaurant\".",
+      "confidence": 0.7,
+      "receipts": [
+        {
+          "receipt_id": "8f48b5a8-5426-46a3-bc38-2203307555e2",
+          "merchant_name": "MEDITERRANEAN GRILL",
+          "total_amount": 36.43,
+          "transaction_date": "2023-11-02T00:00:00",
+          "filename": "receipt_029_restaurant_20231102.txt"
+        },
+        {
+          "receipt_id": "237b4a56-12c4-4f7e-bd20-e4e5580078e0",
+          "merchant_name": "BURGER PALACE",
+          "total_amount": 113.08,
+          "transaction_date": "2023-12-05T00:00:00",
+          "filename": "receipt_034_restaurant_20231205.txt"
+        },
+        {
+          "receipt_id": "c87aa017-d1a9-4f93-9e96-cccfc5e61d2a",
+          "merchant_name": "MEDITERRANEAN GRILL",
+          "total_amount": 20.7,
+          "transaction_date": "2023-12-02T00:00:00",
+          "filename": "receipt_041_restaurant_20231202.txt"
+        },
+        {
+          "receipt_id": "610b2e7b-c738-4f3b-823d-319fdc9f7a33",
+          "merchant_name": "MAMA'S PIZZA",
+          "total_amount": 64.28,
+          "transaction_date": "2023-11-11T00:00:00",
+          "filename": "receipt_043_restaurant_20231111.txt"
+        },
+        {
+          "receipt_id": "67b2357e-2e9e-48eb-ba10-e15779d7159e",
+          "merchant_name": "MEDITERRANEAN GRILL",
+          "total_amount": 18.12,
+          "transaction_date": "2024-01-10T00:00:00",
+          "filename": "receipt_027_restaurant_20240110.txt"
+        }
+      ],
+      "items": [],
+      "processing_time": 5.046669006347656
+    }
+  },
+  {
+    "query": "Find receipts with warranty information",
+    "timestamp": "2026-02-07T18:14:35.494856",
+    "result": {
+      "answer": "The receipts with warranty information are:\n\n1. **BEST BUY** - Date: 2023-12-14\n   - Warranty Info: EXTENDED WARRANTY 2YR\n   - Top items: Keyboard, Webcam, Laptop Charger, EXTENDED WARRANTY 2YR\n\n2. **APPLE** - Date: 2023-11-06\n   - Warranty Info: EXTENDED WARRANTY 2YR\n   - Top items: HDMI Cable, Memory Card 256GB, Webcam, EXTENDED WARRANTY 2YR\n\n3. **APPLE** - Date: 2023-11-27\n   - Warranty Info: EXTENDED WARRANTY 2YR\n   - Top items: SSD Drive 1TB, Keyboard, Phone Case, EXTENDED WARRANTY 2YR\n\n4. **MICRO CENTER** - Date: 2023-12-16\n   - Warranty Info: EXTENDED WARRANTY 2YR\n   - Top items: USB-C Cable, Webcam, Phone Case, Power Bank, EXTENDED WARRANTY 2YR",
+      "confidence": 0.7,
+      "receipts": [
+        {
+          "receipt_id": "62a07469-14a9-4804-94ef-b2dcd742d2f2",
+          "merchant_name": "BEST BUY",
+          "total_amount": 262.75,
+          "transaction_date": "2023-12-14T00:00:00",
+          "filename": "receipt_080_electronics_20231214.txt"
+        },
+        {
+          "receipt_id": "7bd55111-d3c5-4461-ba24-cd55683c569f",
+          "merchant_name": "APPLE",
+          "total_amount": 195.13,
+          "transaction_date": "2023-11-06T00:00:00",
+          "filename": "receipt_081_electronics_20231106.txt"
+        },
+        {
+          "receipt_id": "33507ceb-8a9c-4054-b738-f81b88f49862",
+          "merchant_name": "APPLE",
+          "total_amount": 233.09,
+          "transaction_date": "2023-11-27T00:00:00",
+          "filename": "receipt_077_electronics_20231127.txt"
+        },
+        {
+          "receipt_id": "4f1417b3-94d8-4ea8-8f14-d4fe93e74fcc",
+          "merchant_name": "MICRO CENTER",
+          "total_amount": 250.58,
+          "transaction_date": "2023-12-16T00:00:00",
+          "filename": "receipt_076_electronics_20231216.txt"
+        },
+        {
+          "receipt_id": "dcbc0c4e-fde6-416f-9c77-632937f79d07",
+          "merchant_name": "Ace Hardware",
+          "total_amount": 133.35,
+          "transaction_date": "2023-12-07T00:00:00",
+          "filename": "receipt_096_hardware_20231207.txt"
+        }
+      ],
+      "items": [
+        {
+          "name": "EXTENDED WARRANTY 2YR",
+          "price": 29.95,
+          "category": "electronics",
+          "merchant": "MICRO CENTER",
+          "filename": "receipt_076_electronics_20231216.txt"
+        },
+        {
+          "name": "EXTENDED WARRANTY 2YR",
+          "price": 28.02,
+          "category": "electronics",
+          "merchant": "APPLE",
+          "filename": "receipt_077_electronics_20231127.txt"
+        },
+        {
+          "name": "EXTENDED WARRANTY 2YR",
+          "price": 31.59,
+          "category": "electronics",
+          "merchant": "BEST BUY",
+          "filename": "receipt_080_electronics_20231214.txt"
+        },
+        {
+          "name": "EXTENDED WARRANTY 2YR",
+          "price": 23.46,
+          "category": "electronics",
+          "merchant": "APPLE",
+          "filename": "receipt_081_electronics_20231106.txt"
+        }
+      ],
+      "processing_time": 5.469581365585327
+    }
+  },
+  {
+    "query": "How much did I spend in January 2024?",
+    "timestamp": "2026-02-07T18:14:44.412523",
+    "result": {
+      "answer": "In January 2024, you spent a total of **$601.14**. This includes purchases from various stores such as Target, Chevron, Nike, Rite Aid, Philz Coffee, and Apple.",
+      "confidence": 0.7,
+      "receipts": [
+        {
+          "receipt_id": "14b8deba-e273-4ee5-a712-4808ac8eba56",
+          "merchant_name": "Target",
+          "total_amount": 115.65,
+          "transaction_date": "2024-01-11T00:00:00",
+          "filename": "receipt_008_grocery_20240111.txt"
+        },
+        {
+          "receipt_id": "962e4d53-c372-48e2-bb7a-936acfc8ef43",
+          "merchant_name": "Target",
+          "total_amount": 91.82,
+          "transaction_date": "2024-01-21T00:00:00",
+          "filename": "receipt_024_grocery_20240121.txt"
+        },
+        {
+          "receipt_id": "832ca4c0-32e8-4795-9b2a-68eb8a7c4b4f",
+          "merchant_name": "Chevron",
+          "total_amount": 89.62,
+          "transaction_date": "2024-01-28T00:00:00",
+          "filename": "receipt_100_gas_20240128.txt"
+        },
+        {
+          "receipt_id": "547b75ff-aa7a-44be-a247-fd8bc7a6bf85",
+          "merchant_name": "Nike",
+          "total_amount": 95.85,
+          "transaction_date": "2024-01-29T00:00:00",
+          "filename": "receipt_095_retail_20240129.txt"
+        },
+        {
+          "receipt_id": "5ea8fb53-0bfe-4929-ba0a-3707cf54d4f3",
+          "merchant_name": "Rite Aid",
+          "total_amount": 86.07,
+          "transaction_date": "2024-01-04T00:00:00",
+          "filename": "receipt_090_pharmacy_20240104.txt"
+        }
+      ],
+      "items": [],
+      "processing_time": 4.592105865478516
+    }
+  },
+  {
+    "query": "What did I buy last week?",
+    "timestamp": "2026-02-07T18:14:57.691825",
+    "result": {
+      "answer": "Based on the provided context, here is what you bought last week:\n\n1. **Nike**:\n   - Ground Beef\n   - Salmon Fillet\n   - Organic Bananas\n   - Avocados\n   - Spinach\n   - Cereal\n   - Coffee Beans\n   - Cheese Block\n   - Eggs\n\n2. **Bed Bath & Beyond**:\n   - Rice 5lb\n   - Pasta\n   - Cheese Block\n   - Almond Milk\n   - Cereal\n   - Orange Juice\n   - Ground Beef\n   - Salmon Fillet\n\n3. **Costco Wholesale**:\n   - Bread\n   - Rice 5lb\n   - Pasta\n   - Coffee Beans\n   - Almond Milk\n   - Eggs\n   - Cheese Block\n   - Olive Oil\n   - Organic Bananas\n   - Orange Juice\n   - Spinach\n   - Tomatoes\n   - Apples\n   - Avocados\n   - Kale Bunch",
+      "confidence": 0.7,
+      "receipts": [
+        {
+          "receipt_id": "547b75ff-aa7a-44be-a247-fd8bc7a6bf85",
+          "merchant_name": "Nike",
+          "total_amount": 47.72,
+          "transaction_date": "2024-01-29T00:00:00",
+          "filename": "receipt_095_retail_20240129.txt"
+        },
+        {
+          "receipt_id": "20404069-912c-4621-801c-bb1a35336fad",
+          "merchant_name": "Bed Bath & Beyond",
+          "total_amount": 36.05,
+          "transaction_date": "2024-01-24T00:00:00",
+          "filename": "receipt_094_retail_20240124.txt"
+        },
+        {
+          "receipt_id": "461d8e04-667c-4c9c-8c44-932b33fec4ae",
+          "merchant_name": "Costco Wholesale",
+          "total_amount": 67.18,
+          "transaction_date": "2024-01-24T00:00:00",
+          "filename": "receipt_002_grocery_20240124.txt"
+        },
+        {
+          "receipt_id": "832ca4c0-32e8-4795-9b2a-68eb8a7c4b4f",
+          "merchant_name": "Chevron",
+          "total_amount": 48.06,
+          "transaction_date": "2024-01-28T00:00:00",
+          "filename": "receipt_100_gas_20240128.txt"
+        },
+        {
+          "receipt_id": "ae5b9d28-8eac-4e34-b9a9-985fe5ec22bc",
+          "merchant_name": "CVS/pharmacy",
+          "total_amount": 120.63,
+          "transaction_date": "2024-01-26T00:00:00",
+          "filename": "receipt_089_pharmacy_20240126.txt"
+        }
+      ],
+      "items": [],
+      "processing_time": 6.8400702476501465
+    }
+  },
+  {
+    "query": "Show me all receipts from December",
+    "timestamp": "2026-02-07T18:15:07.554949",
+    "result": {
+      "answer": "Here are all the receipts from December:\n\n1. **76 Gas Station**\n   - Date: 2023-12-13\n   - Subtotal: $56.84\n   - Tax: $5.19\n   - Total amount: $62.03\n   - Number of items: 8\n   - Top items: Chicken Breast, Avocados, Almond Milk, Pasta, Organic Bananas, plus 3 others\n\n2. **Target**\n   - Date: 2023-12-23\n   - Subtotal: $118.94\n   - Tax: $10.11\n   - Total amount: $129.05\n   - Number of items: 15\n   - Top items: Cheese Block, Cereal, Avocados, Salmon Fillet, Coffee Beans, plus 10 others\n\n3. **Target**\n   - Date: 2023-12-24\n   - Subtotal: $62.87\n   - Tax: $5.34\n   - Total amount: $68.21\n   - Number of items: 7\n   - Top items: Orange Juice, Olive Oil, Kale Bunch, Avocados, Apples, plus 2 others\n\n4. **Target**\n   - Date: 2023-12-13\n   - Subtotal: $99.77\n   - Tax: $8.48\n   - Total amount: $108.25\n   - Number of items: 14\n   - Top items: Kale Bunch, Greek Yogurt, Rice 5lb, Organic Bananas, Pasta, plus 9 others\n\n5. **Lowe's**\n   - Date: 2023-12-02\n   - Subtotal: $87.60\n   - Tax: $7.45\n   - Total amount: $95.05\n   - Number of items: 10\n   - Top items: Cereal, Tomatoes, Chicken Breast, Coffee Beans, Orange Juice, plus 5 others\n\n6. **Ace Hardware**\n   - Date: 2023-12-07\n   - Subtotal: $122.06\n   - Tax: $11.29\n   - Total amount: $133.35\n   - Number of items: 15\n   - Top items: Cereal, Apples, Bread, Ground Beef, Avocados, plus 10 others",
+      "confidence": 0.7,
+      "receipts": [
+        {
+          "receipt_id": "3e1e95bf-df3d-4f5d-87f4-4a12a89989cd",
+          "merchant_name": "76 Gas Station",
+          "total_amount": 62.03,
+          "transaction_date": "2023-12-13T00:00:00",
+          "filename": "receipt_099_gas_20231213.txt"
+        },
+        {
+          "receipt_id": "832ca4c0-32e8-4795-9b2a-68eb8a7c4b4f",
+          "merchant_name": "Chevron",
+          "total_amount": 89.62,
+          "transaction_date": "2024-01-28T00:00:00",
+          "filename": "receipt_100_gas_20240128.txt"
+        },
+        {
+          "receipt_id": "02d1ebfb-6d11-4268-afdc-b56eb75feb29",
+          "merchant_name": "Target",
+          "total_amount": 129.05,
+          "transaction_date": "2023-12-23T00:00:00",
+          "filename": "receipt_003_grocery_20231223.txt"
+        },
+        {
+          "receipt_id": "38799c37-939c-4aab-832a-48071176384a",
+          "merchant_name": "Target",
+          "total_amount": 68.21,
+          "transaction_date": "2023-12-24T00:00:00",
+          "filename": "receipt_016_grocery_20231224.txt"
+        },
+        {
+          "receipt_id": "3df0f3cc-84e2-4e9e-820b-13e22a518c9d",
+          "merchant_name": "Target",
+          "total_amount": 108.25,
+          "transaction_date": "2023-12-13T00:00:00",
+          "filename": "receipt_012_grocery_20231213.txt"
+        }
+      ],
+      "items": [],
+      "processing_time": 6.085155248641968
+    }
+  },
+  {
+    "query": "Show me treats I bought",
+    "timestamp": "2026-02-07T18:15:14.581384",
+    "result": {
+      "answer": "Here are the treats you bought:\n\n- **Tiramisu** from various stores:\n  - Price: $11.36 at THE GOLDEN FORK on 2023-11-12.\n  - Price: $9.93 at AKIKO'S SUSHI on 2024-01-16.\n  - Price: $11.29 at MEDITERRANEAN GRILL on 2024-01-10.\n  - Price: $10.07 at MEDITERRANEAN GRILL on 2023-11-02.",
+      "confidence": 0.7,
+      "receipts": [
+        {
+          "receipt_id": "67b2357e-2e9e-48eb-ba10-e15779d7159e",
+          "merchant_name": "MEDITERRANEAN GRILL",
+          "total_amount": 19.76,
+          "transaction_date": "2024-01-10T00:00:00",
+          "filename": "receipt_027_restaurant_20240110.txt"
+        },
+        {
+          "receipt_id": "e7dd5c04-c288-4e6b-87dc-5f9a943ca070",
+          "merchant_name": "THE GOLDEN FORK",
+          "total_amount": 84.27,
+          "transaction_date": "2023-11-12T00:00:00",
+          "filename": "receipt_038_restaurant_20231112.txt"
+        },
+        {
+          "receipt_id": "7dfe60c2-2cd7-400a-89fe-471779ef8ace",
+          "merchant_name": "AKIKO'S SUSHI",
+          "total_amount": 104.9,
+          "transaction_date": "2024-01-16T00:00:00",
+          "filename": "receipt_036_restaurant_20240116.txt"
+        },
+        {
+          "receipt_id": "05048c74-97d2-4039-adf9-ca898436e75b",
+          "merchant_name": "Trader Joe's",
+          "total_amount": 113.44,
+          "transaction_date": "2023-11-24T00:00:00",
+          "filename": "receipt_023_grocery_20231124.txt"
+        },
+        {
+          "receipt_id": "8f48b5a8-5426-46a3-bc38-2203307555e2",
+          "merchant_name": "MEDITERRANEAN GRILL",
+          "total_amount": 75.82,
+          "transaction_date": "2023-11-02T00:00:00",
+          "filename": "receipt_029_restaurant_20231102.txt"
+        }
+      ],
+      "items": [
+        {
+          "name": "Tiramisu",
+          "price": 11.36,
+          "category": "other",
+          "merchant": "THE GOLDEN FORK",
+          "filename": "receipt_038_restaurant_20231112.txt"
+        },
+        {
+          "name": "Tiramisu",
+          "price": 9.93,
+          "category": "other",
+          "merchant": "AKIKO'S SUSHI",
+          "filename": "receipt_036_restaurant_20240116.txt"
+        },
+        {
+          "name": "Tiramisu",
+          "price": 11.29,
+          "category": "other",
+          "merchant": "MEDITERRANEAN GRILL",
+          "filename": "receipt_027_restaurant_20240110.txt"
+        },
+        {
+          "name": "Tiramisu",
+          "price": 10.07,
+          "category": "other",
+          "merchant": "MEDITERRANEAN GRILL",
+          "filename": "receipt_029_restaurant_20231102.txt"
+        }
+      ],
+      "processing_time": 5.054733514785767
+    }
   }
 ]

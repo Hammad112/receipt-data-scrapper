@@ -20,14 +20,7 @@ from typing import Dict, Any, Optional, Tuple
 from dateutil import parser as date_parser
 from dateutil.relativedelta import relativedelta
 
-# Internal logging
-try:
-    from ..utils.logging_config import logger
-except (ImportError, ValueError):
-    try:
-        from utils.logging_config import logger
-    except ImportError:
-        from query.utils.logging_config import logger
+from src.utils.logging_config import logger
 
 
 class TemporalQueryResolver:

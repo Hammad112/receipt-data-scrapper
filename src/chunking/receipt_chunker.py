@@ -139,7 +139,7 @@ class ReceiptChunker:
             'subtotal': float(receipt.subtotal),
             'tax_amount': float(receipt.tax_amount),
             'item_count': len(receipt.items),
-            'categories': list(set(item.category.value for item in receipt.items if item.category)),
+            'categories': receipt.categories,  # Uses new multi-label property
             'has_tip': receipt.tip_amount is not None,
             'has_discounts': receipt.discounts is not None,
             'has_delivery_fee': receipt.delivery_fee is not None,
@@ -190,9 +190,10 @@ class ReceiptChunker:
         base_metadata = self._get_base_metadata(receipt)
         
         for i, item in enumerate(receipt.items):
+            item_categories = [c.value for c in item.categories] if item.categories else ['other']
             content = (
                 f"Item: {item.name}. Price: ${item.total_price:.2f}. "
-                f"Qty: {item.quantity}. Category: {item.category.value if item.category else 'Other'}. "
+                f"Qty: {item.quantity}. Categories: {', '.join(item_categories)}. "
                 f"Store: {receipt.merchant_name}. Date: {receipt.transaction_date.strftime('%Y-%m-%d')}."
             )
             
@@ -201,7 +202,8 @@ class ReceiptChunker:
                 'chunk_type': 'item_detail',
                 'item_index': i,
                 'item_name': item.name,
-                'item_category': item.category.value if item.category else 'other',
+                'item_category': item.category.value if item.category else 'other', # Primary for backward compat
+                'item_categories': item_categories, # New multi-label support
                 'item_price': float(item.total_price),
                 'item_unit_price': float(item.unit_price),
                 'item_quantity': float(item.quantity)
@@ -220,11 +222,15 @@ class ReceiptChunker:
         chunks = []
         base_metadata = self._get_base_metadata(receipt)
         
-        # Group items by category
+        # Group items by category (Multi-Label: item can appear in multiple groups)
         category_groups = defaultdict(list)
         for item in receipt.items:
-            category = item.category or ItemCategory.OTHER
-            category_groups[category].append(item)
+            # If item has no categories, group under OTHER
+            if not item.categories:
+                category_groups[ItemCategory.OTHER].append(item)
+            else:
+                for cat in item.categories:
+                    category_groups[cat].append(item)
         
         for category, items in category_groups.items():
             if len(items) <= 1: continue 

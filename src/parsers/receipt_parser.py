@@ -68,6 +68,12 @@ class ReceiptParser:
             'mouse', 'keyboard', 'monitor', 'printer', 'software', 'hardware',
             'memory', 'drive', 'ssd', 'usb', 'case', 'adapter'
         ],
+        ItemCategory.FAST_FOOD: [
+            'burger', 'fries', 'nuggets', 'sandwich', 'wrap', 'taco', 'burrito',
+            'bowl', 'chipotle', 'mcdonald', 'subway', 'kfc', 'wendy', 'taco bell',
+            'pizza', 'domino', 'papa john', 'chicken', 'wings', 'combo', 'meal',
+            'soda', 'drink', 'shake', 'smoothie', 'cookie', 'apple pie'
+        ],
         ItemCategory.COFFEE_SHOP: [
             'coffee', 'latte', 'espresso', 'cappuccino', 'mocha',
             'drip', 'americano', 'tea', 'pastry', 'croissant', 'muffin'
@@ -81,8 +87,8 @@ class ReceiptParser:
             'pie', 'dessert', 'sweet', 'candy bar', 'pastry'
         ],
         ItemCategory.RESTAURANT: [
-            'burger', 'pizza', 'sandwich', 'salad', 'soup', 'pasta',
-            'steak', 'chicken', 'fish', 'appetizer', 'entree'
+            'steak', 'salad', 'soup', 'pasta', 'appetizer', 'entree',
+            'dine in', 'table service', 'gratuity'
         ],
     }
 
@@ -118,6 +124,9 @@ class ReceiptParser:
         merchant_name = self._extract_merchant_name(lines)
         transaction_date = self._extract_date(lines)
         payment_method = self._extract_payment_method(lines)
+        
+        # Store merchant name for item categorization
+        self._current_merchant_name = merchant_name
         
         # 2. Body Analysis (Items)
         items = self._extract_items(lines)
@@ -290,7 +299,10 @@ class ReceiptParser:
             return None
             
         unit_price = price / quantity if quantity > 0 else price
-        category = self._categorize_item(item_name)
+        
+        # Get merchant name from receipt context for better categorization
+        merchant_name = getattr(self, '_current_merchant_name', None)
+        categories = self._categorize_item(item_name, merchant_name)
         
         if item_name and price and len(item_name) > 1:
             return ReceiptItem(
@@ -298,31 +310,53 @@ class ReceiptParser:
                 quantity=quantity,
                 unit_price=unit_price,
                 total_price=price,
-                category=category
+                categories=categories,
+                category=categories[0] if categories else ItemCategory.OTHER # Backward comp
             )
         return None
 
-    def _categorize_item(self, item_name: str) -> Optional[ItemCategory]:
+    def _categorize_item(self, item_name: str, merchant_name: Optional[str] = None) -> List[ItemCategory]:
         """
-        Categorizes item using a hybrid LLM-first strategy.
-        
-        This implements the 'Industrial Semantic Auto-Tagging' requirement.
+        Categorizes item using merchant context and keyword heuristics.
+        Returns a list of all applicable categories (Multi-Label).
         """
+        categories = set()
         name_lower = item_name.lower()
+        merchant_lower = merchant_name.lower() if merchant_name else ""
         
-        # Strategy 1: LLM Zero-Shot Classification (Primary for Maximum Accuracy)
-        # We use the LLM first to ensure semantic understanding, with heuristics as a speed-backup.
-        if self.openai_client:
-            llm_cat = self._categorize_via_llm(item_name)
-            if llm_cat and llm_cat != ItemCategory.OTHER:
-                return llm_cat
+        # Strategy 1: Merchant-based categorization (implied context)
+        if any(m in merchant_lower for m in ['starbucks', 'peet', 'coffee', 'dunkin', 'philz']):
+            categories.add(ItemCategory.COFFEE_SHOP)
         
-        # Strategy 2: Keyword Heuristics (Fallback/Speed-layer)
+        if any(m in merchant_lower for m in ['mcdonald', 'chipotle', 'subway', 'taco bell', 'burger palace', 
+                                               'panera', 'kfc', 'wendy', 'pizza', 'taco', 'burrito']):
+            categories.add(ItemCategory.FAST_FOOD)
+        
+        if any(m in merchant_lower for m in ['cvs', 'walgreens', 'rite aid', 'pharmacy']):
+            categories.add(ItemCategory.PHARMACY)
+        
+        if any(m in merchant_lower for m in ['best buy', 'apple', 'micro center', 'b&h', 'amazon']):
+            categories.add(ItemCategory.ELECTRONICS)
+            
+        if any(m in merchant_lower for m in ['whole foods', 'trader joe', 'safeway', 'kroger', 'market']):
+            categories.add(ItemCategory.GROCERIES)
+
+        # Strategy 2: Keyword Heuristics (Item specific)
         for category, keywords in self.CATEGORY_KEYWORDS.items():
             if any(keyword in name_lower for keyword in keywords):
-                return category
+                categories.add(category)
+        
+        # Strategy 3: LLM Zero-Shot (only if no categories found via heuristics)
+        if not categories and self.openai_client:
+            llm_cat = self._categorize_via_llm(item_name)
+            if llm_cat and llm_cat != ItemCategory.OTHER:
+                categories.add(llm_cat)
+                
+        # Fallback
+        if not categories:
+            categories.add(ItemCategory.OTHER)
             
-        return ItemCategory.OTHER
+        return list(categories)
 
     def _categorize_via_llm(self, item_name: str) -> Optional[ItemCategory]:
         """Uses OpenAI to classify an item into a known category if heuristics fail."""

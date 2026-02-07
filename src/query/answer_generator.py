@@ -10,14 +10,7 @@ import logging
 from typing import List, Dict, Any, Optional
 from openai import OpenAI
 
-# Internal imports with consistent relative pathing
-try:
-    from ..utils.logging_config import logger
-except (ImportError, ValueError):
-    try:
-        from utils.logging_config import logger
-    except ImportError:
-        from query.utils.logging_config import logger
+from src.utils.logging_config import logger
 
 
 class AnswerGenerator:
