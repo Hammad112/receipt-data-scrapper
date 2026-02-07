@@ -7,18 +7,14 @@ receipt text into structured Pydantic models.
 
 import re
 import uuid
-import logging
-from datetime import datetime
+from datetime import datetime, timezone
 from decimal import Decimal, InvalidOperation
 from typing import List, Optional, Dict, Any, Tuple
 from dateutil import parser as date_parser
 
-try:
-    from ..models import Receipt, ReceiptItem, PaymentMethod, ItemCategory
-    from ..utils.logging_config import logger
-except ImportError:
-    from models import Receipt, ReceiptItem, PaymentMethod, ItemCategory
-    from utils.logging_config import logger
+# Absolute imports for industrial stability
+from src.models import Receipt, ReceiptItem, PaymentMethod, ItemCategory
+from src.utils.logging_config import logger
 
 
 class ReceiptParser:
@@ -31,83 +27,77 @@ class ReceiptParser:
     - Semantic Enrichment: Automatically categorizes items based on keyword mapping.
     """
     
-    def __init__(self):
-        """
-        Initializes the ReceiptParser with prioritized regex patterns.
-        
-        Patterns are organized by feature area (Merchant, Date, Payment, Price, etc.)
-        to allow for easy maintenance and extension as new receipt formats are encountered.
-        """
-        self.merchant_patterns = [
-            # Pattern 1: Bold header/top-line merchant name
-            r'^(.*?)(?:\s+(?:STORE|SHOP|MARKET|PHARMACY|CAFE|RESTAURANT))?$',
-            # Pattern 2: CamelCase or Title Case merchant name
-            r'^([A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)\s+.*$',
-        ]
-        
-        self.date_patterns = [
-            r'(\d{1,2}[/-]\d{1,2}[/-]\d{2,4})', # MM/DD/YYYY or DD/MM/YYYY
-            r'(\d{4}[/-]\d{1,2}[/-]\d{1,2})', # YYYY-MM-DD
-            r'([A-Za-z]{3,9}\s+\d{1,2},?\s+\d{4})', # Month DD, YYYY
-            r'(\d{1,2}\s+[A-Za-z]{3,9}\s+\d{4})', # DD Month YYYY
-        ]
-        
-        self.payment_patterns = {
-            PaymentMethod.CASH: [r'\bcash\b', r'paid\s+cash'],
-            PaymentMethod.CREDIT: [r'\bcredit\b', r'\bvisa\b', r'\bmastercard\b', r'\bamex\b', r'\bdiscover\b'],
-            PaymentMethod.DEBIT: [r'\bdebit\b', r'debit\s+card'],
-            PaymentMethod.APPLE_PAY: [r'apple\s+pay', r'\s*pay'],
-            PaymentMethod.GOOGLE_PAY: [r'google\s+pay'],
-        }
-        
-        self.price_patterns = [
-            r'\$(\d+(?:\.\d{2})?)', # Standard $XX.XX
-            r'(\d+(?:\.\d{2})?)\s*$', # Price at end of line without $
-        ]
-        
-        self.quantity_patterns = [
-            r'(\d+)\s*[xX]', # e.g., 2 x
-            r'qty:\s*(\d+)', # e.g., Qty: 3
-            r'(\d+)\s+(?:pcs|items|units)',
-        ]
-        
-        # High-confidence item detection patterns
-        self.item_patterns = [
-            r'^([A-Za-z][\w\s\(\)\-\.]+?)\s+\$\s*(\d+\.\d{2})\s*$', # Name $Price
-            r'^(\d+)\s*[xX]\s+([A-Za-z][\w\s\(\)\-\.]+?)\s+\$\s*(\d+\.\d{2})\s*$', # Qty x Name $Price
-            r'^([A-Za-z][\w\s\(\)\-\.]+?)\s*\((\d+)\)\s+\$\s*(\d+\.\d{2})\s*$', # Name (Qty) $Price
-            r'^([A-Za-z][\w\s\(\)\-\.]+?)\s+@\s+\$\s*(\d+\.\d{2})\s*$', # Name @ $Price
-            r'^([A-Za-z][\w\s\(\)\-\.]+?)\s{2,}\$\s*(\d+\.\d{2})\s*$', # Name    $Price
-        ]
-        
-        self.category_keywords = {
-            ItemCategory.GROCERIES: [
-                'milk', 'bread', 'eggs', 'cheese', 'meat', 'vegetables', 'fruits',
-                'cereal', 'pasta', 'rice', 'beans', 'yogurt', 'butter', 'oil'
-            ],
-            ItemCategory.ELECTRONICS: [
-                'phone', 'laptop', 'computer', 'tablet', 'headphones', 'cable',
-                'charger', 'battery', 'tv', 'camera', 'gaming', 'console',
-                'mouse', 'keyboard', 'monitor', 'printer', 'software', 'hardware',
-                'memory', 'drive', 'ssd', 'usb', 'case', 'adapter'
-            ],
-            ItemCategory.COFFEE_SHOP: [
-                'coffee', 'latte', 'espresso', 'cappuccino', 'mocha',
-                'drip', 'americano', 'tea', 'pastry', 'croissant', 'muffin'
-            ],
-            ItemCategory.PHARMACY: [
-                'medicine', 'prescription', 'vitamin', 'supplement', 'pain',
-                'cold', 'flu', 'allergy', 'first aid', 'bandage'
-            ],
-            ItemCategory.TREATS: [
-                'candy', 'chocolate', 'ice cream', 'cake', 'cookie', 'donut',
-                'pie', 'dessert', 'sweet', 'candy bar', 'pastry'
-            ],
-            ItemCategory.RESTAURANT: [
-                'burger', 'pizza', 'sandwich', 'salad', 'soup', 'pasta',
-                'steak', 'chicken', 'fish', 'appetizer', 'entree'
-            ],
-        }
+    # --- Class Constants for Regex Patterns ---
+    
+    MERCHANT_PATTERNS = [
+        r'^(.*?)(?:\s+(?:STORE|SHOP|MARKET|PHARMACY|CAFE|RESTAURANT))?$',
+        r'^([A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)\s+.*$',
+    ]
+    
+    DATE_PATTERNS = [
+        r'(\d{1,2}[/-]\d{1,2}[/-]\d{2,4})',
+        r'(\d{4}[/-]\d{1,2}[/-]\d{1,2})',
+        r'([A-Za-z]{3,9}\s+\d{1,2},?\s+\d{4})',
+        r'(\d{1,2}\s+[A-Za-z]{3,9}\s+\d{4})',
+    ]
+    
+    PAYMENT_PATTERNS = {
+        PaymentMethod.CASH: [r'\bcash\b', r'paid\s+cash'],
+        PaymentMethod.CREDIT: [r'\bcredit\b', r'\bvisa\b', r'\bmastercard\b', r'\bamex\b', r'\bdiscover\b'],
+        PaymentMethod.DEBIT: [r'\bdebit\b', r'debit\s+card'],
+        PaymentMethod.APPLE_PAY: [r'apple\s+pay', r'\s*pay'],
+        PaymentMethod.GOOGLE_PAY: [r'google\s+pay'],
+    }
+    
+    ITEM_PATTERNS = [
+        r'^([A-Za-z][\w\s\(\)\-\.]+?)\s+\$\s*(\d+\.\d{2})\s*$',
+        r'^(\d+)\s*[xX]\s+([A-Za-z][\w\s\(\)\-\.]+?)\s+\$\s*(\d+\.\d{2})\s*$',
+        r'^([A-Za-z][\w\s\(\)\-\.]+?)\s*\((\d+)\)\s+\$\s*(\d+\.\d{2})\s*$',
+        r'^([A-Za-z][\w\s\(\)\-\.]+?)\s+@\s+\$\s*(\d+\.\d{2})\s*$',
+        r'^([A-Za-z][\w\s\(\)\-\.]+?)\s{2,}\$\s*(\d+\.\d{2})\s*$',
+    ]
+    
+    CATEGORY_KEYWORDS = {
+        ItemCategory.GROCERIES: [
+            'milk', 'bread', 'eggs', 'cheese', 'meat', 'vegetables', 'fruits',
+            'cereal', 'pasta', 'rice', 'beans', 'yogurt', 'butter', 'oil'
+        ],
+        ItemCategory.ELECTRONICS: [
+            'phone', 'laptop', 'computer', 'tablet', 'headphones', 'cable',
+            'charger', 'battery', 'tv', 'camera', 'gaming', 'console',
+            'mouse', 'keyboard', 'monitor', 'printer', 'software', 'hardware',
+            'memory', 'drive', 'ssd', 'usb', 'case', 'adapter'
+        ],
+        ItemCategory.COFFEE_SHOP: [
+            'coffee', 'latte', 'espresso', 'cappuccino', 'mocha',
+            'drip', 'americano', 'tea', 'pastry', 'croissant', 'muffin'
+        ],
+        ItemCategory.PHARMACY: [
+            'medicine', 'prescription', 'vitamin', 'supplement', 'pain',
+            'cold', 'flu', 'allergy', 'first aid', 'bandage'
+        ],
+        ItemCategory.TREATS: [
+            'candy', 'chocolate', 'ice cream', 'cake', 'cookie', 'donut',
+            'pie', 'dessert', 'sweet', 'candy bar', 'pastry'
+        ],
+        ItemCategory.RESTAURANT: [
+            'burger', 'pizza', 'sandwich', 'salad', 'soup', 'pasta',
+            'steak', 'chicken', 'fish', 'appetizer', 'entree'
+        ],
+    }
+
+    # --- Metadata Regex Patterns ---
+    PHONE_PATTERN = r'(\(?\d{3}\)?[\-\.\s]?\d{3}[\-\.\s]?\d{4})'
+    ADDRESS_PATTERN = r'\d+\s+[A-Za-z0-9\s\.\-]+(?:Street|St\.|Avenue|Ave\.|Road|Rd\.|Boulevard|Blvd\.|Drive|Dr\.|Lane|Ln\.|Way|Court|Ct\.)'
+    CITY_STATE_ZIP_PATTERN = r'([A-Za-z\s]+),\s*([A-Z]{2})\s+(\d{5})'
+    CARD_NETWORK_PATTERN = r"\b(visa|mastercard|amex|american express|discover)\b.*?(\*{2,}|\bending\b)\s*(\d{4})\b"
+
+
+    def __init__(self, openai_client=None):
+        """Initializes the ReceiptParser with pre-compiled patterns."""
+        self.item_re_patterns = [re.compile(p) for p in self.ITEM_PATTERNS]
+        self.date_re_patterns = [re.compile(p) for p in self.DATE_PATTERNS]
+        self.openai_client = openai_client
 
     def parse_receipt(self, text: str, filename: Optional[str] = None) -> Receipt:
         """
@@ -159,14 +149,9 @@ class ReceiptParser:
         )
 
     def _extract_merchant_name(self, lines: List[str]) -> str:
-        """
-        Extracts the merchant name from the header (first 5 lines).
-        
-        Heuristic: The first non-empty line that isn't a date or address is 
-        usually the merchant. We also look for specific store suffixes.
-        """
+        """Extracts the merchant name from the header (first 5 lines)."""
         for line in lines[:5]:
-            for pattern in self.merchant_patterns:
+            for pattern in self.MERCHANT_PATTERNS:
                 match = re.search(pattern, line, re.IGNORECASE)
                 if match and len(match.group(1)) > 2:
                     return match.group(1).strip()
@@ -174,28 +159,21 @@ class ReceiptParser:
         return lines[0] if lines else "Unknown Merchant"
 
     def _extract_date(self, lines: List[str]) -> datetime:
-        """
-        Statically parses dates using robust regex patterns.
-        
-        Prioritizes common US and ISO formats. Falls back to current time 
-        if no date is found to ensure system stability.
-        """
+        """Statically parses dates using prioritized regex patterns."""
         for line in lines:
-            for pattern in self.date_patterns:
-                matches = re.findall(pattern, line, re.IGNORECASE)
+            for pattern in self.date_re_patterns:
+                matches = pattern.findall(line)
                 for match in matches:
                     try:
                         return date_parser.parse(match)
                     except Exception:
                         continue
-        return datetime.utcnow()
+        return datetime.now(timezone.utc)
 
     def _extract_payment_method(self, lines: List[str]) -> PaymentMethod:
-        """
-        Detects payment method by scanning for identifying keywords.
-        """
+        """Detects payment method by scanning for identifying keywords."""
         text_lower = ' '.join(lines).lower()
-        for method, patterns in self.payment_patterns.items():
+        for method, patterns in self.PAYMENT_PATTERNS.items():
             for pattern in patterns:
                 if re.search(pattern, text_lower):
                     return method
@@ -258,19 +236,15 @@ class ReceiptParser:
         return any(re.search(pattern, line_lower) for pattern in non_item_patterns)
 
     def _parse_item_line(self, line: str) -> Optional[ReceiptItem]:
-        """
-        Low-level regex parser for a single candidate item string.
-        Extracts Name, Quantity, and Price.
-        """
+        """Low-level regex parser for a single candidate item string."""
         quantity = Decimal('1')
         item_name = ""
-        price = Decimal('0')
         price_str = ""
         matched = False
         
         # Try structured multi-group patterns first (Qty + Name + Price)
-        for pattern in self.item_patterns:
-            match = re.search(pattern, line)
+        for pattern in self.item_re_patterns:
+            match = pattern.search(line)
             if match:
                 groups = match.groups()
                 if len(groups) == 2:
@@ -330,13 +304,55 @@ class ReceiptParser:
 
     def _categorize_item(self, item_name: str) -> Optional[ItemCategory]:
         """
-        Semantic categorization using priority keyword mapping.
+        Categorizes item using a hybrid LLM-first strategy.
+        
+        This implements the 'Industrial Semantic Auto-Tagging' requirement.
         """
         name_lower = item_name.lower()
-        for category, keywords in self.category_keywords.items():
+        
+        # Strategy 1: LLM Zero-Shot Classification (Primary for Maximum Accuracy)
+        # We use the LLM first to ensure semantic understanding, with heuristics as a speed-backup.
+        if self.openai_client:
+            llm_cat = self._categorize_via_llm(item_name)
+            if llm_cat and llm_cat != ItemCategory.OTHER:
+                return llm_cat
+        
+        # Strategy 2: Keyword Heuristics (Fallback/Speed-layer)
+        for category, keywords in self.CATEGORY_KEYWORDS.items():
             if any(keyword in name_lower for keyword in keywords):
                 return category
+            
         return ItemCategory.OTHER
+
+    def _categorize_via_llm(self, item_name: str) -> Optional[ItemCategory]:
+        """Uses OpenAI to classify an item into a known category if heuristics fail."""
+        try:
+            import json
+            categories = [c.value for c in ItemCategory]
+            
+            prompt = f"""Classify this receipt item into EXACTLY ONE category: "{item_name}"
+            
+            Choices: {', '.join(categories)}
+            
+            Return ONLY a JSON object: {{"category": "choice"}}"""
+            
+            response = self.openai_client.chat.completions.create(
+                model="gpt-4o-mini",
+                messages=[{"role": "user", "content": prompt}],
+                response_format={"type": "json_object"},
+                temperature=0
+            )
+            
+            result = json.loads(response.choices[0].message.content)
+            cat_str = result.get('category', '').lower()
+            
+            for cat in ItemCategory:
+                if cat.value.lower() == cat_str:
+                    return cat
+        except Exception as e:
+            logger.debug(f"LLM Categorization failed for '{item_name}': {e}")
+            
+        return None
 
     def _extract_totals(self, lines: List[str]) -> Tuple[Decimal, Decimal, Optional[Decimal], Optional[Decimal], Decimal, Optional[Decimal]]:
         """
@@ -385,10 +401,13 @@ class ReceiptParser:
         return bool(re.search(r"\b(refund|refunded|return|returned|credit memo|credit\s+transaction)\b", text))
 
     def _extract_price_from_line(self, line: str) -> Optional[Decimal]:
-        """
-        Helper to find a decimal value at the end of a tagged line (e.g., 'Total: $42.00').
-        """
-        for pattern in self.price_patterns:
+        """Helper to find a decimal value at the end of a tagged line."""
+        # Standard price pattern: $ followed by digits and decimal
+        price_patterns = [
+            r'\$(\d+(?:\.\d{2})?)',
+            r'(\d+(?:\.\d{2})?)\s*$',
+        ]
+        for pattern in price_patterns:
             matches = re.findall(pattern, line)
             if matches:
                 try:
@@ -398,41 +417,31 @@ class ReceiptParser:
         return None
 
     def _extract_metadata(self, lines: List[str]) -> Dict[str, Any]:
-        """
-        Analyzes lines for contextual data:
-        - Merchant contact (Phone, Address, State, Zip)
-        - Transaction tracking (Order #, Transaction ID)
-        - Staff tracking (Cashier, Server)
-        - Payment details (Card Network, Last 4)
-        """
+        """Centralized extraction of all receipt metadata components."""
         metadata = {}
-        phone_pattern = r'(\(?\d{3}\)?[\-\.\s]?\d{3}[\-\.\s]?\d{4})'
-        address_pattern = r'\d+\s+[A-Za-z0-9\s\.\-]+(?:Street|St\.|Avenue|Ave\.|Road|Rd\.|Boulevard|Blvd\.|Drive|Dr\.|Lane|Ln\.|Way|Court|Ct\.)'
-        city_state_zip_pattern = r'([A-Za-z\s]+),\s*([A-Z]{2})\s+(\d{5})'
-        
-        warranty_lines = []
-        card_network = None
-        card_last4 = None
+        metadata.update(self._extract_contact_metadata(lines))
+        metadata.update(self._extract_staff_metadata(lines))
+        metadata.update(self._extract_reference_metadata(lines))
+        metadata.update(self._extract_financial_ids(lines))
+        return metadata
 
-        for i, line in enumerate(lines):
-            ls = line.strip()
-            ll = ls.lower()
-            
-            # --- Contact Info ---
+    def _extract_contact_metadata(self, lines: List[str]) -> Dict[str, Any]:
+        """Extracts phone, address, and location details."""
+        metadata = {}
+        for i, ls in enumerate(lines):
+            ls = ls.strip()
             if not metadata.get('merchant_phone'):
-                pm = re.search(phone_pattern, ls)
+                pm = re.search(self.PHONE_PATTERN, ls)
                 if pm: metadata['merchant_phone'] = pm.group(1)
             
             if not metadata.get('merchant_address'):
-                if re.search(address_pattern, ls, re.IGNORECASE):
+                if re.search(self.ADDRESS_PATTERN, ls, re.IGNORECASE):
                     metadata['merchant_address'] = ls
-                    # Multi-line address check
                     if i + 1 < len(lines):
                         nl = lines[i+1].strip()
                         if re.search(r'[A-Za-z\s]+,\s*[A-Z]{2}\s+\d{5}', nl):
                             metadata['merchant_address'] += f", {nl}"
                     
-                    # Split into components
                     city_state = re.search(r'([A-Za-z\s]+),\s*([A-Z]{2})\s*(\d{5})?', metadata['merchant_address'])
                     if city_state:
                         metadata['merchant_city'] = city_state.group(1).strip()
@@ -440,50 +449,54 @@ class ReceiptParser:
                         if city_state.group(3):
                             metadata['merchant_zip'] = city_state.group(3).strip()
                 else:
-                    csz = re.search(city_state_zip_pattern, ls)
+                    csz = re.search(self.CITY_STATE_ZIP_PATTERN, ls)
                     if csz and not metadata.get('merchant_city'):
                         metadata['merchant_city'] = csz.group(1).strip()
                         metadata['merchant_state'] = csz.group(2).strip()
                         metadata['merchant_zip'] = csz.group(3).strip()
-            
-            # --- Staff ---
-            if not metadata.get('cashier'):
-                if 'cashier:' in ll: metadata['cashier'] = ls.split(':', 1)[1].strip()
-                elif 'server:' in ll: metadata['cashier'] = ls.split(':', 1)[1].strip()
-                elif 'associate:' in ll: metadata['cashier'] = ls.split(':', 1)[1].strip()
-            
-            # --- References ---
-            if not metadata.get('order_number') and 'order #' in ll:
+        return metadata
+
+    def _extract_staff_metadata(self, lines: List[str]) -> Dict[str, Any]:
+        """Identifies staff members and registers."""
+        metadata = {}
+        for ls in lines:
+            ll = ls.lower()
+            if 'cashier:' in ll and not metadata.get('cashier'):
+                metadata['cashier'] = ls.split(':', 1)[1].strip()
+            elif 'server:' in ll and not metadata.get('cashier'): # Often server is the cashier for restaurants
+                metadata['cashier'] = ls.split(':', 1)[1].strip()
+            elif 'associate:' in ll and not metadata.get('cashier'):
+                metadata['cashier'] = ls.split(':', 1)[1].strip()
+        return metadata
+
+    def _extract_reference_metadata(self, lines: List[str]) -> Dict[str, Any]:
+        """Extracts order, transaction, and store identifiers."""
+        metadata = {}
+        warranty_lines = []
+        for ls in lines:
+            ll = ls.lower()
+            if 'order #' in ll and not metadata.get('order_number'):
                 metadata['order_number'] = ls.split('#', 1)[1].strip()
-            if not metadata.get('transaction_id') and 'transaction id:' in ll:
+            elif 'transaction id:' in ll and not metadata.get('transaction_id'):
                 metadata['transaction_id'] = ls.split(':', 1)[1].strip()
-            if not metadata.get('store_number') and 'store #' in ll:
+            elif 'store #' in ll and not metadata.get('store_number'):
                 metadata['store_number'] = ls.split('#', 1)[1].strip()
-            if 'warranty' in ll:
+            elif 'warranty' in ll:
                 warranty_lines.append(ls)
-
-            # --- Financial IDs ---
-            if card_network is None or card_last4 is None:
-                card_match = re.search(r"\b(visa|mastercard|amex|american express|discover)\b.*?(\*{2,}|\bending\b)\s*(\d{4})\b", ll)
-                if card_match:
-                    raw_network = card_match.group(1)
-                    if raw_network == "american express":
-                        raw_network = "amex"
-                    card_network = raw_network
-                    card_last4 = card_match.group(3)
-                else:
-                    card_match2 = re.search(r"\b(visa|mastercard|amex|discover)\b.*?\b(\d{4})\b", ll)
-                    if card_match2:
-                        card_network = card_match2.group(1)
-                        card_last4 = card_match2.group(2)
-
+        
         if warranty_lines:
             metadata['has_warranty'] = True
             metadata['warranty_text'] = " | ".join(dict.fromkeys(warranty_lines))
+        return metadata
 
-        if card_network:
-            metadata['card_network'] = card_network
-        if card_last4:
-            metadata['card_last4'] = card_last4
-                
+    def _extract_financial_ids(self, lines: List[str]) -> Dict[str, Any]:
+        """Detects card networks and last 4 digits."""
+        metadata = {}
+        for ls in lines:
+            ll = ls.lower()
+            card_match = re.search(self.CARD_NETWORK_PATTERN, ll)
+            if card_match:
+                metadata['card_network'] = card_match.group(1).replace("american express", "amex")
+                metadata['card_last4'] = card_match.group(3)
+                break  # Usually only one payment record
         return metadata

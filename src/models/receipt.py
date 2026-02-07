@@ -1,32 +1,24 @@
 """
 Data models for receipt processing and querying.
 
-This module defines the core data structures used throughout the system:
-- Receipt: Complete receipt information
-- ReceiptItem: Individual item details
-- ReceiptChunk: Chunk for vector embedding
-- QueryResult: Query response structure
-- PaymentMethod: Payment method enumeration
-- ItemCategory: Item category enumeration
+This module defines the core data structures used throughout the system,
+ensuring type safety and validation via Pydantic.
 """
 
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 from decimal import Decimal
 from typing import List, Optional, Dict, Any
 from enum import Enum
 
 from pydantic import BaseModel, Field, field_validator
 
-try:
-    from ..utils.logging_config import logger
-except ImportError:
-    import logging
-    logger = logging.getLogger(__name__)
+# Absolute imports for industrial stability
+from src.utils.logging_config import logger
 
 
 class PaymentMethod(str, Enum):
-    """Payment method enumeration."""
+    """Supported payment methods for categorical filtering."""
     CASH = "cash"
     CREDIT = "credit"
     DEBIT = "debit"
@@ -36,7 +28,7 @@ class PaymentMethod(str, Enum):
 
 
 class ItemCategory(str, Enum):
-    """Item category enumeration."""
+    """Industry-standard categories for receipt items."""
     GROCERIES = "groceries"
     RESTAURANT = "restaurant"
     COFFEE_SHOP = "coffee_shop"
@@ -47,30 +39,37 @@ class ItemCategory(str, Enum):
 
 
 class ReceiptItem(BaseModel):
-    """Individual receipt item."""
+    """
+    Represents a single line item extracted from a receipt.
+    Includes validation for names and prices.
+    """
     name: str
     quantity: Decimal = Field(default=Decimal('1'))
     unit_price: Decimal
     total_price: Decimal
-    category: Optional[ItemCategory] = None
+    category: Optional[ItemCategory] = ItemCategory.OTHER
     discount: Optional[Decimal] = None
     warranty_info: Optional[str] = None
     
     @field_validator('name')
     @classmethod
     def validate_name(cls, v):
+        """Ensures item names meet minimum length requirements."""
         if not v or len(v.strip()) < 2:
             raise ValueError('Item name must be at least 2 characters')
         return v.strip()
 
 
 class Receipt(BaseModel):
-    """Complete receipt information."""
+    """
+    The primary data structure representing a fully parsed receipt.
+    Orchestrates validation of financial totals.
+    """
     receipt_id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     filename: Optional[str] = None
     merchant_name: str
     transaction_date: datetime
-    payment_method: PaymentMethod
+    payment_method: PaymentMethod = PaymentMethod.OTHER
     card_network: Optional[str] = None
     card_last4: Optional[str] = None
     items: List[ReceiptItem] = Field(default_factory=list)
@@ -82,7 +81,7 @@ class Receipt(BaseModel):
     discounts: Optional[Decimal] = None
     raw_text: str
     
-    # Additional metadata fields
+    # Metadata attributes
     merchant_address: Optional[str] = None
     merchant_city: Optional[str] = None
     merchant_state: Optional[str] = None
@@ -101,59 +100,70 @@ class Receipt(BaseModel):
     
     @field_validator('total_amount')
     @classmethod
-    def validate_total_amount(cls, v, info):
+    def validate_total_consistency(cls, v, info):
+        """Cross-references the grand total with its component parts."""
         data = info.data
-        if data:
-            subtotal = data.get('subtotal', Decimal('0'))
-            tax_amount = data.get('tax_amount', Decimal('0'))
-            tip_amount = data.get('tip_amount', Decimal('0'))
-            delivery_fee = data.get('delivery_fee', Decimal('0'))
-            discounts = data.get('discounts', Decimal('0'))
+        if not data:
+            return v
             
-            calculated_total = subtotal + tax_amount
-            if tip_amount:
-                calculated_total += tip_amount
-            if delivery_fee:
-                calculated_total += delivery_fee
-            if discounts:
-                calculated_total -= discounts
-            
-            # Allow more tolerance for rounding errors and additional fees
-            if abs(v - calculated_total) > Decimal('1.00'):
-                logger.warning(f"Total validation mismatch: found {v}, calculated {calculated_total}")
+        subtotal = data.get('subtotal', Decimal('0'))
+        tax = data.get('tax_amount', Decimal('0'))
+        tip = data.get('tip_amount', Decimal('0')) or Decimal('0')
+        fee = data.get('delivery_fee', Decimal('0')) or Decimal('0')
+        disc = data.get('discounts', Decimal('0')) or Decimal('0')
         
+        calculated = subtotal + tax + tip + fee - disc
+        
+        # Log a warning if the mismatch is significant (> $1.00)
+        if abs(v - calculated) > Decimal('1.00'):
+            logger.warning(
+                f"Financial mismatch detected in receipt: {data.get('merchant_name')}. "
+                f"Found {v}, Expected {calculated}"
+            )
         return v
     
     @property
     def item_count(self) -> int:
-        """Get the number of items in the receipt."""
+        """Helper to count the number of line items."""
         return len(self.items)
     
     @property
     def categories(self) -> List[str]:
-        """Get list of categories in the receipt."""
+        """Returns a unique list of all categories present in the receipt items."""
         return list(set(item.category.value for item in self.items if item.category))
+
+    @property
+    def is_return(self) -> bool:
+        """Alias for return_transaction."""
+        return self.return_transaction
 
 
 class ReceiptChunk(BaseModel):
-    """Chunk of receipt data for vector embedding."""
+    """
+    A specific slice of receipt data ready for vector embedding.
+    Includes rigorous content validation.
+    """
     chunk_id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     receipt_id: str
-    chunk_type: str  # receipt_summary, item_detail, category_group, etc.
+    chunk_type: str  # receipt_summary, item_detail, etc.
     content: str
     metadata: Dict[str, Any] = Field(default_factory=dict)
-    created_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     
     @field_validator('content')
     @classmethod
-    def validate_content(cls, v):
+    def validate_chunk_density(cls, v):
+        """Ensures chunk content is rich enough for meaningful embedding."""
         if not v or len(v.strip()) < 10:
-            raise ValueError('Chunk content must be at least 10 characters')
+            raise ValueError('Chunk content is too sparse for embedding')
         return v.strip()
 
 
 class QueryResult(BaseModel):
-    """Result of a query operation."""
+    """
+    The final response structure for the RAG system.
+    Encapsulates the answer and its supporting evidence.
+    """
     answer: str
     receipts: List[Dict[str, Any]] = Field(default_factory=list)
     items: List[Dict[str, Any]] = Field(default_factory=list)
@@ -161,13 +171,3 @@ class QueryResult(BaseModel):
     query_type: str
     processing_time: float = Field(ge=0.0)
     metadata: Dict[str, Any] = Field(default_factory=dict)
-    
-    @property
-    def receipt_count(self) -> int:
-        """Get the number of receipts in the result."""
-        return len(self.receipts)
-    
-    @property
-    def item_count(self) -> int:
-        """Get the number of items in the result."""
-        return len(self.items)

@@ -9,19 +9,15 @@ This module handles:
 
 import os
 import time
-import logging
+from datetime import datetime, timezone
 from typing import List, Dict, Any, Optional
-from datetime import datetime
 
 from openai import OpenAI
 from dotenv import load_dotenv
 
-try:
-    from ..models import ReceiptChunk
-    from ..utils.logging_config import logger
-except ImportError:
-    from models import ReceiptChunk
-    from utils.logging_config import logger
+# Absolute imports for industrial stability
+from src.utils.logging_config import logger, setup_logging
+from src.models import Receipt, ReceiptChunk
 
 try:
     from pinecone import Pinecone, ServerlessSpec
@@ -346,3 +342,37 @@ class VectorManager:
         except Exception as e:
             logger.error(f"Delete failed for receipt_id {receipt_id}: {e}")
             return False
+
+    def get_latest_transaction_date(self) -> Optional[datetime]:
+        """
+        Get the most recent transaction date from indexed receipts.
+        
+        Returns:
+            datetime of latest receipt, or None if index is empty
+        """
+        try:
+            # Search with no filters to get any recent receipt
+            # Use a dummy vector (zeros) since we just want metadata
+            dummy_vector = [0.0] * 1536
+            
+            results = self.index.query(
+                vector=dummy_vector,
+                top_k=100,
+                include_metadata=True,
+                filter={'chunk_type': 'receipt_summary'}
+            )
+            
+            max_ts = 0
+            for match in results.get('matches', []):
+                meta = match.get('metadata', {})
+                ts = meta.get('transaction_ts', 0)
+                if ts and ts > max_ts:
+                    max_ts = ts
+            
+            if max_ts > 0:
+                return datetime.fromtimestamp(max_ts, tz=timezone.utc)
+            
+            return None
+        except Exception as e:
+            logger.warning(f"Failed to get latest transaction date: {e}")
+            return None

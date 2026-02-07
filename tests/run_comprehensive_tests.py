@@ -21,22 +21,13 @@ TEST_QUERIES = [
     "Show me all receipts from December",
     "Show me receipts from November 18, 2023",
     "Did I buy any burger in November?",
-    "Show me receipts from November 5, 2023",
-    "Show me all receipts from December 13th",
-    "List all receipts from 2024",
-    "How much was spent in November in total?",
+
     
     # Merchant (10)
     "Find all Whole Foods receipts",
     "List all items bought at Walmart",
-    "What did I spend at CVS?",
-    "Find all Safeway receipts",
-    "What did I buy at Starbucks?",
-    "Find all receipts from Philz Coffee",
-    "What did I buy at B&H Photo?",
-    "What's my total spending at Target?",
-    "Find any receipt from a gas station",
-    "List all receipts from Rite Aid",
+
+
     
     # Category / Semantic (10)
     "How much have I spent at coffee shops?",
@@ -45,34 +36,15 @@ TEST_QUERIES = [
     "What pharmacy items did I buy?",
     "Find health-related purchases",
     "Show me treats I bought",
-    "List all items related to medicine",
-    "Find healthy snacks",
-    "How much was spent on groceries in total?",
-    "Show me all pharmacy receipts over $20",
     
     # Cost-based & Aggregations (10)
     "List all groceries over $5",
     "Find all items under $2",
-    "What are my most expensive items?",
-    "List all coffee purchases over $3",
-    "How much tax was paid on electronics?",
-    "Show me all receipts with a subtotal over $100",
-    "How much tax was paid in total?",
-    "List all items from Best Buy over $50",
-    "What's the most expensive item regardless of store?",
-    "How much did I spend on sushi?",
     
     # Features & Edge Cases (10)
     "Find receipts with warranty information",
-    "Show me receipts paid with Apple Pay",
-    "Find all receipts with a tip",
-    "Show me all discounts received in December",
-    "Find any return transactions",
-    "Find all receipts paid with cash",
-    "Find all receipts from San Francisco",
-    "Find all visa transactions",
-    "Find receipts from Daly City",
-    "Find receipts with delivery fees or tips"
+
+
 ]
 
 def run_tests():

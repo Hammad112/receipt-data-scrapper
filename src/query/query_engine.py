@@ -2,199 +2,217 @@
 Orchestrator for the Receipt Intelligence Query Engine.
 """
 
-import logging
 import re
 import os
+import time
 from datetime import datetime
-from typing import List, Dict, Any, Optional
+from typing import Dict, Any, List, Optional
 from decimal import Decimal
-from openai import OpenAI
 
-try:
-    from ..models import QueryResult
-    from ..vectorstore import VectorManager
-    from .query_parser import QueryParser
-    from .answer_generator import AnswerGenerator
-    from ..utils.logging_config import logger
-except ImportError:
-    from models import QueryResult
-    from vectorstore import VectorManager
-    from query.query_parser import QueryParser
-    from query.answer_generator import AnswerGenerator
-    from utils.logging_config import logger
+# Industrial-grade absolute imports
+from src.query.query_parser import QueryParser
+from src.query.answer_generator import AnswerGenerator
+from src.models import QueryResult
+from src.utils.logging_config import logger
+from src.utils.normalization import normalize_merchant_name
 
 
 class QueryEngine:
     """
-    Industrial-grade orchestrator for the RAG pipeline.
+    Orchestrates the RAG pipeline for receipt queries.
     
     Responsibilities:
-    1. Query Decomposition: Uses QueryParser to extract structured intent.
-    2. Context Retrieval: Executes hybrid search (vector + filtered) via VectorManager.
-    3. Reasoning: Grounds the LLM in retrieved context to generate answers.
-    4. Deterministic Auditing: Verifies LLM math against source metadata.
+    - Intent parsing (QueryParser)
+    - Semantic search & filtering (VectorManager)
+    - Financial verification (Deterministic Audit)
+    - Response synthesis (AnswerGenerator)
     """
-    
-    def __init__(self, vector_manager: VectorManager):
-        """Initializes the engine with its core components."""
-        self.vector_manager = vector_manager # Modular Sub-components
-        self.openai_client = OpenAI() # Initialize OpenAI client
-        self.parser = QueryParser()
-        self.generator = AnswerGenerator(openai_client=self.openai_client) # Pass client
-        logger.info("QueryEngine initialized with modular RAG components.")
 
-    def query(self, query_text: str, top_k: int = 15) -> QueryResult:
+    def __init__(self, vector_manager):
+        """Initializes the engine with its component dependencies."""
+        self.parser = QueryParser()
+        self.generator = AnswerGenerator()
+        self.vector_manager = vector_manager
+
+    def query(self, query_text: str) -> QueryResult:
         """
-        Executes a full RAG cycle for a user query.
+        Executes a full RAG cycle for a natural language query.
+        
+        Args:
+            query_text: The user's question about their receipts.
+            
+        Returns:
+            A QueryResult object containing the synthesized answer and metadata.
         """
-        start_time = datetime.utcnow()
-        logger.info(f"Processing query: '{query_text}'")
-        
-        # 1. Parse intent and extract structured filters
-        query_params = self.parser.parse(query_text)
-        logger.debug(f"Parsed parameters: {query_params}")
-        
-        # 2. Build backend filters for Pinecone (Hybrid Search)
-        filters = self._build_search_filters(query_params)
-        logger.info(f"Executing hybrid search with filters: {filters}")
-        
-        # 3. Retrieve relevant chunks (Multi-View)
-        search_results = self.vector_manager.hybrid_search(
-            query=query_text,
-            filters=filters,
-            top_k=top_k
-        )
-        
-        if not search_results:
-            logger.warning(f"No results found for query: '{query_text}'")
-            return QueryResult(
-                answer="I couldn't find any receipts matching your request.",
-                receipts=[],
-                items=[],
-                confidence=0.0,
-                query_type=query_params.get('query_type', 'general'),
-                processing_time=(datetime.utcnow() - start_time).total_seconds(),
-                metadata=query_params
+        start_time = time.time()
+        logger.info(f"Processing query: {query_text}")
+
+        try:
+            # 0. Get latest receipt date from index for temporal reference
+            latest_date = self.vector_manager.get_latest_transaction_date()
+            if latest_date:
+                logger.info(f"Using latest receipt date as temporal reference: {latest_date}")
+                # Temporarily override reference date for temporal resolver
+                original_ref = self.parser.temporal_resolver._reference_date
+                self.parser.temporal_resolver._reference_date = latest_date
+            else:
+                logger.warning("No receipts found in index, using current date for temporal queries")
+
+            # 1. Parsing intent and parameters
+            params = self.parser.parse(query_text)
+            logger.debug(f"Parsed parameters: {params}")
+
+            # Restore original reference date
+            if latest_date:
+                self.parser.temporal_resolver._reference_date = original_ref
+
+            # 2. Contextual Retrieval (Pinecone hybrid search)
+            filters = self._build_search_filters(params)
+            search_results = self.vector_manager.hybrid_search(query_text, filters=filters)
+            
+            if not search_results:
+                return QueryResult(
+                    answer="I couldn't find any receipts matching those criteria.",
+                    confidence=0.0,
+                    query_type=params.get('query_type', 'general'),
+                    processing_time=time.time() - start_time
+                )
+
+            # 3. Independent Financial Audit (Independent Audit Pattern)
+            # This verifies LLM-generated summaries against deterministic math.
+            audit_result = {}
+            if params.get('query_type') == 'aggregation':
+                audit_result = self._perform_aggregation_audit(params, search_results)
+                logger.info(f"Audit completed: {audit_result}")
+
+            # 4. Answer Generation
+            answer = self.generator.generate(
+                query=query_text,
+                context=search_results,
+                query_params=params,
+                audit_result=audit_result
             )
 
-        # 4. Semantic verification (Aggregation Audit)
-        audit_result = None
-        if query_params.get('aggregation'):
-            audit_result = self._perform_aggregation_audit(query_params, search_results)
-            if audit_result:
-                query_params['audited_aggregation'] = audit_result
+            # 5. Result Assembly
+            processing_time = time.time() - start_time
+            return QueryResult(
+                answer=answer,
+                receipts=self._deduplicate_receipts(search_results),
+                items=self._extract_items(search_results),
+                confidence=0.85 if audit_result.get('verified') else 0.7,
+                query_type=params.get('query_type', 'general'),
+                processing_time=processing_time,
+                metadata={'audit': audit_result, 'params': params}
+            )
 
-        # 5. Generate grounded answer (Injecting audited data)
-        answer_data = self.generator.generate_answer(query_text, search_results, query_params)
-        
-        if audit_result and 'value' in audit_result:
-             # Append verification badge to the answer
-             answer_data['answer'] += f"\n\n(Verified Sum: ${audit_result['value']:.2f} across {audit_result['count']} entries)"
-
-        # Process results into receipts/items lists for the QueryResult object
-        receipts = []
-        items = []
-        seen_rids = set()
-        for res in search_results:
-            meta = res.get('metadata', {})
-            rid = meta.get('receipt_id')
-            if rid and rid not in seen_rids:
-                receipts.append(meta)
-                seen_rids.add(rid)
-            if meta.get('chunk_type') == 'item_detail':
-                items.append({
-                    'name': meta.get('item_name'),
-                    'price': meta.get('item_price'),
-                    'merchant': meta.get('merchant_name'),
-                    'filename': meta.get('filename')
-                })
-
-        return QueryResult(
-            answer=answer_data['answer'],
-            receipts=receipts,
-            items=items,
-            confidence=min(len(search_results) / 10.0, 1.0),
-            query_type=query_params.get('query_type', 'general'),
-            processing_time=(datetime.utcnow() - start_time).total_seconds(),
-            metadata={
-                'query_params': query_params,
-                'search_filters': filters,
-                'retrieval_count': len(search_results)
-            }
-        )
+        except Exception as e:
+            logger.exception(f"Fatal error in QueryEngine: {e}")
+            return QueryResult(
+                answer="An internal error occurred while processing your request.",
+                confidence=0.0,
+                query_type="error",
+                processing_time=time.time() - start_time
+            )
 
     def process_query(self, query: str) -> QueryResult:
         """Alias for query() to support older test scripts."""
         return self.query(query)
 
-    def _build_search_filters(self, params: Dict[str, Any]) -> Optional[Dict[str, Any]]:
-        """
-        Translates parsed intent into Pinecone metadata filters.
-        Strict adherence to metadata is enforced here to solve the 'Vector-Only' red flag.
-        """
+    def _build_search_filters(self, params: Dict[str, Any]) -> Dict[str, Any]:
+        """Maps query parameters to Pinecone metadata filters."""
         filters = {}
         
-        # 1. Merchant Matching (Strict normalization)
+        # Merchant filtering (handles multi-merchant lists)
         merchants = params.get('merchants', [])
         if merchants:
-            norm_merchants = [self._normalize_merchant_name(m) for m in merchants]
-            norm_merchants = [m for m in norm_merchants if m] # Remove empty strings
-            if norm_merchants:
-                if len(norm_merchants) == 1:
-                    filters['merchant_name_norm'] = norm_merchants[0]
-                else:
-                    filters['merchant_name_norm'] = {"$in": norm_merchants}
+            if len(merchants) == 1:
+                filters['merchant_name_norm'] = normalize_merchant_name(merchants[0])
+            else:
+                filters['merchant_name_norm'] = {"$in": [normalize_merchant_name(m) for m in merchants]}
 
-        # 2. Temporal Logic (Mandatory for temporal queries)
-        if 'date_filter' in params:
-            filters.update(params['date_filter'])
-        
-        if 'date_range' in params:
+        # Date range filtering
+        date_range = params.get('date_range')
+        if date_range:
             try:
-                # Support both dict and ISO string formats
-                start_val = params['date_range'].get('start')
-                end_val = params['date_range'].get('end')
+                if isinstance(date_range, dict):
+                    start_val = date_range.get('start')
+                    end_val = date_range.get('end')
+                    # Ensure values are strings before parsing
+                    if isinstance(start_val, str) and isinstance(end_val, str):
+                        start_dt = datetime.fromisoformat(start_val)
+                        end_dt = datetime.fromisoformat(end_val)
+                    else:
+                        raise ValueError(f"date_range values must be strings, got start={type(start_val)}, end={type(end_val)}")
+                else:
+                    start_dt = date_range[0]
+                    end_dt = date_range[1]
                 
-                if start_val and end_val:
-                    start_ts = int(datetime.fromisoformat(start_val.replace('Z', '+00:00')).timestamp())
-                    end_ts = int(datetime.fromisoformat(end_val.replace('Z', '+00:00')).timestamp())
-                    filters['transaction_ts'] = {"$gte": start_ts, "$lte": end_ts}
-            except Exception as e:
-                logger.error(f"Filter Error (Date Range): {e}")
+                filters['transaction_ts'] = {
+                    "$gte": int(start_dt.timestamp()),
+                    "$lte": int(end_dt.timestamp())
+                }
+            except (KeyError, IndexError, ValueError, TypeError) as e:
+                logger.warning(f"Failed to parse date_range for filters: {e}")
 
-        # 3. Category Logic
+        # Category filtering - search both item_detail and category_group chunks
         categories = params.get('categories', [])
         if categories:
-            if len(categories) == 1:
-                filters['item_category'] = categories[0]
+            if len(categories) > 1:
+                filters['$or'] = [
+                    {'item_category': {"$in": categories}},
+                    {'category': {"$in": categories}},
+                ]
             else:
-                filters['item_category'] = {"$in": categories}
+                filters['$or'] = [
+                    {'item_category': categories[0]},
+                    {'category': categories[0]},
+                ]
 
-        # 4. Financial Thresholds
-        if 'min_amount' in params or 'max_amount' in params:
-            amt_filter = {}
-            if 'min_amount' in params: amt_filter["$gte"] = float(params['min_amount'])
-            if 'max_amount' in params: amt_filter["$lte"] = float(params['max_amount'])
-            filters['total_amount'] = amt_filter
-
-        # 5. Feature Flags & City/State
-        for field in ['has_warranty', 'is_return', 'has_tip', 'has_discounts', 'has_delivery_fee', 'merchant_city', 'merchant_state']:
-            if params.get(field):
-                filters[field] = params[field]
-        
         if 'feature_any_of' in params:
-            filters["$or"] = [{f: True} for f in params['feature_any_of']]
+            if '$or' in filters:
+                # Combine with existing $or
+                existing_or = filters.pop('$or')
+                filters['$and'] = [
+                    {'$or': existing_or},
+                    {'$or': [{f: True} for f in params['feature_any_of']]},
+                ]
+            else:
+                filters['$or'] = [{f: True} for f in params['feature_any_of']]
 
         return filters if filters else None
 
-    def _normalize_merchant_name(self, name: str) -> str:
-        """Standardizes merchant names for precise matching."""
-        if not name: return ""
-        norm = name.lower()
-        norm = re.sub(r'[^a-z0-9]', '', norm)
-        # Suffix stripping for better matching (e.g., 'Target Store' -> 'target')
-        norm = re.sub(r'(inc|corp|llc|store|shop|market|pharmacy|cafe|coffee|restaurant)$', '', norm)
-        return norm.strip()
+    def _deduplicate_receipts(self, results: List[Dict]) -> List[Dict]:
+        """Extracts unique receipts from multiple chunk results."""
+        seen = set()
+        receipts = []
+        for r in results:
+            meta = r.get('metadata', {})
+            rid = meta.get('receipt_id')
+            if rid and rid not in seen:
+                seen.add(rid)
+                receipts.append({
+                    'receipt_id': rid,
+                    'merchant_name': meta.get('merchant_name'),
+                    'total_amount': meta.get('total_amount'),
+                    'transaction_date': meta.get('transaction_date'),
+                    'filename': meta.get('filename')
+                })
+        return receipts
+
+    def _extract_items(self, results: List[Dict]) -> List[Dict]:
+        """Extracts individual item data from item_detail chunks."""
+        items = []
+        for r in results:
+            meta = r.get('metadata', {})
+            if meta.get('chunk_type') == 'item_detail':
+                items.append({
+                    'name': meta.get('item_name'),
+                    'price': meta.get('item_price'),
+                    'category': meta.get('item_category'),
+                    'merchant': meta.get('merchant_name'),
+                    'filename': meta.get('filename')
+                })
+        return items
 
     def _perform_aggregation_audit(self, params: Dict[str, Any], results: List[Dict[str, Any]]) -> Optional[Dict[str, Any]]:
         """
