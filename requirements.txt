@@ -2,31 +2,31 @@
 # ==========================================
 
 # Core AI & Infrastructure
-langchain==0.1.13
-langchain-openai==0.1.1
-langchain-community==0.0.29
-openai==1.14.3
-pinecone-client==3.2.2
-python-dotenv==1.0.1
+langchain
+langchain-openai
+langchain-community
+openai
+pinecone
+python-dotenv
 
 # Data Engineering
-pydantic==2.6.4
-pandas==2.2.1
-numpy==1.26.4
-python-dateutil==2.9.0.post0
-regex==2023.12.25
+pydantic
+pandas
+numpy
+python-dateutil
+regex
 
 # Interface & Visualization
-streamlit==1.32.2
-plotly==5.20.0
+streamlit
+plotly
 
 # System Utilities
-tqdm==4.66.2
-rich==13.7.1
-typer==0.9.4
+tqdm
+rich
+typer
 
 # Industrial Testing Suite
-pytest==8.1.1
-pytest-asyncio==0.23.6
-pytest-mock==3.12.0
-coverage==7.4.4
+pytest
+pytest-asyncio
+pytest-mock
+coverage

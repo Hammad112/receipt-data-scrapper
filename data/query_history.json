@@ -846,5 +846,458 @@
       ],
       "processing_time": 5.054733514785767
     }
+  },
+  {
+    "query": "How much did I spend in January 2024?",
+    "timestamp": "2026-02-07T23:25:09.657205",
+    "result": {
+      "answer": "In January 2024, you spent a total of **$820.31**. This includes purchases from various stores such as Target, Chevron, Costco, Nike, Rite Aid, and Philz Coffee.",
+      "confidence": 0.7,
+      "receipts": [
+        {
+          "receipt_id": "ad56bf4b-4577-4d1d-a6de-bfcdca690840",
+          "merchant_name": "Target",
+          "total_amount": 115.65,
+          "transaction_date": "2024-01-11T00:00:00",
+          "filename": "receipt_008_grocery_20240111.txt"
+        },
+        {
+          "receipt_id": "d3ec548f-2279-4533-b32f-a813f7bb9be2",
+          "merchant_name": "Target",
+          "total_amount": 91.82,
+          "transaction_date": "2024-01-21T00:00:00",
+          "filename": "receipt_024_grocery_20240121.txt"
+        },
+        {
+          "receipt_id": "37a5814e-bf57-419d-bab7-13f36c45035a",
+          "merchant_name": "Chevron",
+          "total_amount": 89.62,
+          "transaction_date": "2024-01-28T00:00:00",
+          "filename": "receipt_100_gas_20240128.txt"
+        },
+        {
+          "receipt_id": "4bd90bce-8bdc-4320-8646-cfc169d1db2e",
+          "merchant_name": "Costco",
+          "total_amount": 115.1,
+          "transaction_date": "2024-01-24T00:00:00",
+          "filename": "receipt_002_grocery_20240124.txt"
+        },
+        {
+          "receipt_id": "4128f29f-a7cd-4baf-be75-564d20c4209d",
+          "merchant_name": "Nike",
+          "total_amount": 95.85,
+          "transaction_date": "2024-01-29T00:00:00",
+          "filename": "receipt_095_retail_20240129.txt"
+        }
+      ],
+      "items": [],
+      "processing_time": 6.50663685798645
+    }
+  },
+  {
+    "query": "How much did I spend in January 2024?",
+    "timestamp": "2026-02-07T23:32:19.723536",
+    "result": {
+      "answer": "In January 2024, you spent a total of **$820.31**. This includes purchases from various stores such as Target, Chevron, Costco, Nike, Rite Aid, and Philz Coffee.",
+      "confidence": 0.7,
+      "receipts": [
+        {
+          "receipt_id": "ad56bf4b-4577-4d1d-a6de-bfcdca690840",
+          "merchant_name": "Target",
+          "total_amount": 115.65,
+          "transaction_date": "2024-01-11T00:00:00",
+          "filename": "receipt_008_grocery_20240111.txt"
+        },
+        {
+          "receipt_id": "d3ec548f-2279-4533-b32f-a813f7bb9be2",
+          "merchant_name": "Target",
+          "total_amount": 91.82,
+          "transaction_date": "2024-01-21T00:00:00",
+          "filename": "receipt_024_grocery_20240121.txt"
+        },
+        {
+          "receipt_id": "37a5814e-bf57-419d-bab7-13f36c45035a",
+          "merchant_name": "Chevron",
+          "total_amount": 89.62,
+          "transaction_date": "2024-01-28T00:00:00",
+          "filename": "receipt_100_gas_20240128.txt"
+        },
+        {
+          "receipt_id": "4bd90bce-8bdc-4320-8646-cfc169d1db2e",
+          "merchant_name": "Costco",
+          "total_amount": 115.1,
+          "transaction_date": "2024-01-24T00:00:00",
+          "filename": "receipt_002_grocery_20240124.txt"
+        },
+        {
+          "receipt_id": "4128f29f-a7cd-4baf-be75-564d20c4209d",
+          "merchant_name": "Nike",
+          "total_amount": 95.85,
+          "transaction_date": "2024-01-29T00:00:00",
+          "filename": "receipt_095_retail_20240129.txt"
+        }
+      ],
+      "items": [],
+      "processing_time": 5.7331554889678955
+    }
+  },
+  {
+    "query": "What did I buy last week?",
+    "timestamp": "2026-02-07T23:32:31.927045",
+    "result": {
+      "answer": "Based on the provided context, here is what you bought last week:\n\n1. **From Nike**:\n   - Ground Beef\n   - Salmon Fillet\n   - Organic Bananas\n   - Avocados\n   - Spinach\n\n2. **From Costco**:\n   - Bread\n   - Rice 5lb\n   - Pasta\n   - Coffee Beans\n   - Almond Milk\n   - Eggs\n   - Cheese Block\n   - Olive Oil\n\n3. **From Bed Bath & Beyond**:\n   - Rice 5lb\n   - Pasta\n   - Cheese Block\n   - Almond Milk\n   - Cereal\n\n4. **From Bed Bath & Beyond**:\n   - Orange Juice\n   - Ground Beef\n   - Salmon Fillet\n\n5. **From Chevron**:\n   - Orange Juice\n   - Spinach\n   - Salmon Fillet\n   - Organic Bananas\n   - Avocados\n   - Ground Beef\n\n6. **From Costco**:\n   - Organic Bananas\n   - Orange Juice\n   - Tomatoes\n   - Apples\n   - Avocados\n   - Spinach\n   - Kale Bunch",
+      "confidence": 0.7,
+      "receipts": [
+        {
+          "receipt_id": "4128f29f-a7cd-4baf-be75-564d20c4209d",
+          "merchant_name": "Nike",
+          "total_amount": 47.72,
+          "transaction_date": "2024-01-29T00:00:00",
+          "filename": "receipt_095_retail_20240129.txt"
+        },
+        {
+          "receipt_id": "4bd90bce-8bdc-4320-8646-cfc169d1db2e",
+          "merchant_name": "Costco",
+          "total_amount": 67.18,
+          "transaction_date": "2024-01-24T00:00:00",
+          "filename": "receipt_002_grocery_20240124.txt"
+        },
+        {
+          "receipt_id": "e4e052f5-142c-4d2e-abc2-f76026caea00",
+          "merchant_name": "Bed Bath & Beyond",
+          "total_amount": 36.05,
+          "transaction_date": "2024-01-24T00:00:00",
+          "filename": "receipt_094_retail_20240124.txt"
+        },
+        {
+          "receipt_id": "37a5814e-bf57-419d-bab7-13f36c45035a",
+          "merchant_name": "Chevron",
+          "total_amount": 48.06,
+          "transaction_date": "2024-01-28T00:00:00",
+          "filename": "receipt_100_gas_20240128.txt"
+        },
+        {
+          "receipt_id": "34d6a3f0-dd93-4e00-a29f-2d7270965cc5",
+          "merchant_name": "CVS/pharmacy",
+          "total_amount": 120.63,
+          "transaction_date": "2024-01-26T00:00:00",
+          "filename": "receipt_089_pharmacy_20240126.txt"
+        }
+      ],
+      "items": [],
+      "processing_time": 7.960452556610107
+    }
+  },
+  {
+    "query": "Show me all receipts from December",
+    "timestamp": "2026-02-07T23:32:45.671794",
+    "result": {
+      "answer": "Here are all the receipts from December:\n\n1. **76 Gas Station**\n   - Date: 2023-12-13\n   - Subtotal: $56.84\n   - Tax: $5.19\n   - Total amount: $62.03\n   - Number of items: 8\n   - Top items: Chicken Breast, Avocados, Almond Milk, Pasta, Organic Bananas, plus 3 others\n\n2. **Target**\n   - Date: 2023-12-23\n   - Subtotal: $118.94\n   - Tax: $10.11\n   - Total amount: $129.05\n   - Number of items: 15\n   - Top items: Cheese Block, Cereal, Avocados, Salmon Fillet, Coffee Beans, plus 10 others\n\n3. **Target**\n   - Date: 2023-12-24\n   - Subtotal: $62.87\n   - Tax: $5.34\n   - Total amount: $68.21\n   - Number of items: 7\n   - Top items: Orange Juice, Olive Oil, Kale Bunch, Avocados, Apples, plus 2 others\n\n4. **Target**\n   - Date: 2023-12-13\n   - Subtotal: $99.77\n   - Tax: $8.48\n   - Total amount: $108.25\n   - Number of items: 14\n   - Top items: Kale Bunch, Greek Yogurt, Rice 5lb, Organic Bananas, Pasta, plus 9 others\n\n5. **Costco**\n   - Date: 2023-12-21\n   - Subtotal: $37.52\n   - Tax: $3.19\n   - Total amount: $40.71\n   - Number of items: 5\n   - Top items: Ground Beef, Kale Bunch, Apples, Chicken Breast, Tomatoes\n\n6. **Lowe's**\n   - Date: 2023-12-02\n   - Subtotal: $87.60\n   - Tax: $7.45\n   - Total amount: $95.05\n   - Number of items: 10\n   - Top items: Cereal, Tomatoes, Chicken Breast, Coffee Beans, Orange Juice, plus 5 others\n\n7. **Ace Hardware**\n   - Date",
+      "confidence": 0.7,
+      "receipts": [
+        {
+          "receipt_id": "31d13aec-0cd4-48ca-80aa-feea1b8c1187",
+          "merchant_name": "76 Gas Station",
+          "total_amount": 62.03,
+          "transaction_date": "2023-12-13T00:00:00",
+          "filename": "receipt_099_gas_20231213.txt"
+        },
+        {
+          "receipt_id": "37a5814e-bf57-419d-bab7-13f36c45035a",
+          "merchant_name": "Chevron",
+          "total_amount": 89.62,
+          "transaction_date": "2024-01-28T00:00:00",
+          "filename": "receipt_100_gas_20240128.txt"
+        },
+        {
+          "receipt_id": "7ea05aa7-dd26-4858-8150-132b91bfcbcc",
+          "merchant_name": "Target",
+          "total_amount": 129.05,
+          "transaction_date": "2023-12-23T00:00:00",
+          "filename": "receipt_003_grocery_20231223.txt"
+        },
+        {
+          "receipt_id": "916cd846-d1d9-4e7c-bdb7-629719adcd71",
+          "merchant_name": "Target",
+          "total_amount": 68.21,
+          "transaction_date": "2023-12-24T00:00:00",
+          "filename": "receipt_016_grocery_20231224.txt"
+        },
+        {
+          "receipt_id": "6547fd49-cca2-4ed2-b506-688296491a8a",
+          "merchant_name": "Target",
+          "total_amount": 108.25,
+          "transaction_date": "2023-12-13T00:00:00",
+          "filename": "receipt_012_grocery_20231213.txt"
+        }
+      ],
+      "items": [],
+      "processing_time": 6.963608026504517
+    }
+  },
+  {
+    "query": "Find all Whole Foods receipts",
+    "timestamp": "2026-02-07T23:33:01.814078",
+    "result": {
+      "answer": "All the receipts from Whole Foods are from a single visit on November 18, 2023. The total amount spent was $142.56, with a subtotal of $131.39 and tax of $11.17. The payment was made by credit card, and 14 items were purchased, including:\n\n- Cheese Block\n- Salmon Fillet\n- Eggs\n- Spinach\n- Coffee Beans\n- Orange Juice\n- Ground Beef\n- Avocados\n- Tomatoes\n- Kale Bunch\n- Chicken Breast\n- Apples\n- Olive Oil\n- Bread\n\nThe store is located at 963 Market Street.",
+      "confidence": 0.7,
+      "receipts": [
+        {
+          "receipt_id": "0ace921d-af53-4a14-b6ed-a3a9e6d5b242",
+          "merchant_name": "Whole Foods",
+          "total_amount": 142.56,
+          "transaction_date": "2023-11-18T00:00:00",
+          "filename": "receipt_015_grocery_20231118.txt"
+        }
+      ],
+      "items": [
+        {
+          "name": "Apples",
+          "price": 7.63,
+          "category": "groceries",
+          "merchant": "Whole Foods",
+          "filename": "receipt_015_grocery_20231118.txt"
+        },
+        {
+          "name": "Ground Beef",
+          "price": 7.87,
+          "category": "groceries",
+          "merchant": "Whole Foods",
+          "filename": "receipt_015_grocery_20231118.txt"
+        },
+        {
+          "name": "Bread",
+          "price": 6.75,
+          "category": "groceries",
+          "merchant": "Whole Foods",
+          "filename": "receipt_015_grocery_20231118.txt"
+        },
+        {
+          "name": "Salmon Fillet",
+          "price": 24.14,
+          "category": "groceries",
+          "merchant": "Whole Foods",
+          "filename": "receipt_015_grocery_20231118.txt"
+        },
+        {
+          "name": "Chicken Breast",
+          "price": 14.38,
+          "category": "groceries",
+          "merchant": "Whole Foods",
+          "filename": "receipt_015_grocery_20231118.txt"
+        }
+      ],
+      "processing_time": 6.049152374267578
+    }
+  },
+  {
+    "query": "Find health-related purchases",
+    "timestamp": "2026-02-07T23:33:25.110573",
+    "result": {
+      "answer": "The health-related purchases identified in the provided context include:\n\n1. **Advil 200ct**\n2. **Cough Drops**\n3. **Multivitamin**\n4. **Thermometer**\n5. **First Aid Kit**\n6. **Vitamin D**\n7. **Allergy Medicine**\n8. **Band-Aids**\n9. **ATORVASTATIN 30DAY**\n10. **LISINOPRIL 30DAY**\n11. **METFORMIN 30DAY**\n\nThese items were purchased from various pharmacies including Walgreens, CVS/pharmacy, and Rite Aid.",
+      "confidence": 0.7,
+      "receipts": [
+        {
+          "receipt_id": "d235b0be-e875-4b7c-b09f-9369908679bb",
+          "merchant_name": "Walgreens",
+          "total_amount": 144.53,
+          "transaction_date": "2023-11-05T00:00:00",
+          "filename": "receipt_085_pharmacy_20231105.txt"
+        },
+        {
+          "receipt_id": "2e0b4602-a4a2-4935-8edc-71a71183b19e",
+          "merchant_name": "CVS/pharmacy",
+          "total_amount": 148.68,
+          "transaction_date": "2024-01-01T00:00:00",
+          "filename": "receipt_086_pharmacy_20240101.txt"
+        },
+        {
+          "receipt_id": "34d6a3f0-dd93-4e00-a29f-2d7270965cc5",
+          "merchant_name": "CVS/pharmacy",
+          "total_amount": 111.18,
+          "transaction_date": "2024-01-26T00:00:00",
+          "filename": "receipt_089_pharmacy_20240126.txt"
+        },
+        {
+          "receipt_id": "4df6db26-9276-4a41-b0ec-6fc40cc2c4ca",
+          "merchant_name": "Rite Aid",
+          "total_amount": 79.33,
+          "transaction_date": "2024-01-04T00:00:00",
+          "filename": "receipt_090_pharmacy_20240104.txt"
+        },
+        {
+          "receipt_id": "c1e4ea62-3537-4a8e-8eef-9c0ee6532599",
+          "merchant_name": "CVS/pharmacy",
+          "total_amount": 72.19,
+          "transaction_date": "2023-12-05T00:00:00",
+          "filename": "receipt_087_pharmacy_20231205.txt"
+        }
+      ],
+      "items": [
+        {
+          "name": "First Aid Kit",
+          "price": 34.26,
+          "category": "pharmacy",
+          "merchant": "CVS/pharmacy",
+          "filename": "receipt_086_pharmacy_20240101.txt"
+        },
+        {
+          "name": "Thermometer",
+          "price": 24.36,
+          "category": "pharmacy",
+          "merchant": "Walgreens",
+          "filename": "receipt_085_pharmacy_20231105.txt"
+        },
+        {
+          "name": "First Aid Kit",
+          "price": 23.76,
+          "category": "pharmacy",
+          "merchant": "CVS/pharmacy",
+          "filename": "receipt_088_pharmacy_20240116.txt"
+        }
+      ],
+      "processing_time": 6.416718482971191
+    }
+  },
+  {
+    "query": "How much have I spent at coffee shops?",
+    "timestamp": "2026-02-07T23:35:45.146973",
+    "result": {
+      "answer": "You have spent a total of **$294.19** at coffee shops.",
+      "confidence": 0.7,
+      "receipts": [
+        {
+          "receipt_id": "3b098379-983d-4582-9981-348acd13e119",
+          "merchant_name": "Starbucks",
+          "total_amount": 81.06,
+          "transaction_date": "2023-12-05T00:00:00",
+          "filename": "receipt_053_coffee_20231205.txt"
+        },
+        {
+          "receipt_id": "3f6feb7c-1020-40f8-9651-b406e32b8a99",
+          "merchant_name": "Starbucks",
+          "total_amount": 16.52,
+          "transaction_date": "2023-12-15T00:00:00",
+          "filename": "receipt_057_coffee_20231215.txt"
+        },
+        {
+          "receipt_id": "726c406c-0f75-43ff-858c-ef3dabab7a59",
+          "merchant_name": "Peet's Coffee",
+          "total_amount": 18.72,
+          "transaction_date": "2023-12-31T00:00:00",
+          "filename": "receipt_052_coffee_20231231.txt"
+        },
+        {
+          "receipt_id": "368e5a95-27fe-403d-ae60-b4b27eeb29a3",
+          "merchant_name": "Starbucks",
+          "total_amount": 5.85,
+          "transaction_date": "2023-11-03T00:00:00",
+          "filename": "receipt_050_coffee_20231103.txt"
+        },
+        {
+          "receipt_id": "2f62a41a-2559-4ff1-b581-befb3e07f844",
+          "merchant_name": "Philz Coffee",
+          "total_amount": 40.55,
+          "transaction_date": "2024-01-04T00:00:00",
+          "filename": "receipt_051_coffee_20240104.txt"
+        }
+      ],
+      "items": [],
+      "processing_time": 6.341726779937744
+    }
+  },
+  {
+    "query": "What did I buy last week?",
+    "timestamp": "2026-02-07T23:41:07.791434",
+    "result": {
+      "answer": "Based on the receipts from last week, you purchased the following items:\n\n1. **From Nike**:\n   - Ground Beef\n   - Salmon Fillet\n   - Organic Bananas\n   - Avocados\n   - Spinach\n\n2. **From Costco**:\n   - Bread\n   - Rice 5lb\n   - Pasta\n   - Coffee Beans\n   - Almond Milk\n   - Eggs\n   - Cheese Block\n   - Olive Oil\n\n3. **From Nike**:\n   - Cereal\n   - Coffee Beans\n   - Cheese Block\n   - Eggs\n\n4. **From Bed Bath & Beyond**:\n   - Rice 5lb\n   - Pasta\n   - Cheese Block\n   - Almond Milk\n   - Cereal\n\n5. **From Bed Bath & Beyond**:\n   - Orange Juice\n   - Ground Beef\n   - Salmon Fillet\n\n6. **From Chevron**:\n   - Orange Juice\n   - Spinach\n   - Salmon Fillet\n   - Organic Bananas\n   - Avocados\n   - Ground Beef\n\n7. **From Costco**:\n   - Organic Bananas\n   - Orange Juice\n   - Tomatoes\n   - Apples\n   - Avocados\n   - Spinach\n   - Kale Bunch",
+      "confidence": 0.7,
+      "receipts": [
+        {
+          "receipt_id": "4128f29f-a7cd-4baf-be75-564d20c4209d",
+          "merchant_name": "Nike",
+          "total_amount": 47.72,
+          "transaction_date": "2024-01-29T00:00:00",
+          "filename": "receipt_095_retail_20240129.txt"
+        },
+        {
+          "receipt_id": "4bd90bce-8bdc-4320-8646-cfc169d1db2e",
+          "merchant_name": "Costco",
+          "total_amount": 67.18,
+          "transaction_date": "2024-01-24T00:00:00",
+          "filename": "receipt_002_grocery_20240124.txt"
+        },
+        {
+          "receipt_id": "e4e052f5-142c-4d2e-abc2-f76026caea00",
+          "merchant_name": "Bed Bath & Beyond",
+          "total_amount": 36.05,
+          "transaction_date": "2024-01-24T00:00:00",
+          "filename": "receipt_094_retail_20240124.txt"
+        },
+        {
+          "receipt_id": "37a5814e-bf57-419d-bab7-13f36c45035a",
+          "merchant_name": "Chevron",
+          "total_amount": 48.06,
+          "transaction_date": "2024-01-28T00:00:00",
+          "filename": "receipt_100_gas_20240128.txt"
+        },
+        {
+          "receipt_id": "34d6a3f0-dd93-4e00-a29f-2d7270965cc5",
+          "merchant_name": "CVS/pharmacy",
+          "total_amount": 120.63,
+          "transaction_date": "2024-01-26T00:00:00",
+          "filename": "receipt_089_pharmacy_20240126.txt"
+        }
+      ],
+      "items": [],
+      "processing_time": 8.516629219055176
+    }
+  },
+  {
+    "query": "What's my total spending at restaurants?",
+    "timestamp": "2026-02-07T23:47:21.565786",
+    "result": {
+      "answer": "Your total spending at restaurants is **$190.69**. This includes:\n\n- $72.30 at BURGER PALACE\n- $68.28 at THAI BASIL KITCHEN\n- $20.70 at MEDITERRANEAN GRILL\n- $29.41 at BURGER PALACE",
+      "confidence": 0.7,
+      "receipts": [
+        {
+          "receipt_id": "b7d26f82-a91e-479b-b6a6-2f836fdf91b4",
+          "merchant_name": "BURGER PALACE",
+          "total_amount": 72.3,
+          "transaction_date": "2023-12-05T00:00:00",
+          "filename": "receipt_034_restaurant_20231205.txt"
+        },
+        {
+          "receipt_id": "42b356f2-14bf-40fb-8057-03ba43b06df3",
+          "merchant_name": "THAI BASIL KITCHEN",
+          "total_amount": 68.28,
+          "transaction_date": "2023-11-14T00:00:00",
+          "filename": "receipt_032_restaurant_20231114.txt"
+        },
+        {
+          "receipt_id": "afc303da-a4fc-4447-a81d-a42f033e338b",
+          "merchant_name": "MEDITERRANEAN GRILL",
+          "total_amount": 36.43,
+          "transaction_date": "2023-11-02T00:00:00",
+          "filename": "receipt_029_restaurant_20231102.txt"
+        },
+        {
+          "receipt_id": "bee4bb9f-37f6-4cf9-8829-91c48bcf26e3",
+          "merchant_name": "MEDITERRANEAN GRILL",
+          "total_amount": 20.7,
+          "transaction_date": "2023-12-02T00:00:00",
+          "filename": "receipt_041_restaurant_20231202.txt"
+        },
+        {
+          "receipt_id": "8822c52d-dfd6-4a7e-b1d4-64c70cde2473",
+          "merchant_name": "MAMA'S PIZZA",
+          "total_amount": 64.28,
+          "transaction_date": "2023-11-11T00:00:00",
+          "filename": "receipt_043_restaurant_20231111.txt"
+        }
+      ],
+      "items": [],
+      "processing_time": 9.400571346282959
+    }
   }
 ]

@@ -200,8 +200,9 @@ class QueryEngine:
         return receipts
 
     def _extract_items(self, results: List[Dict]) -> List[Dict]:
-        """Extracts individual item data from item_detail chunks."""
+        """Extracts individual item data from item_detail chunks. Fallback to receipts if no items found."""
         items = []
+        # 1. Try to get specific item details first
         for r in results:
             meta = r.get('metadata', {})
             if meta.get('chunk_type') == 'item_detail':
@@ -212,6 +213,22 @@ class QueryEngine:
                     'merchant': meta.get('merchant_name'),
                     'filename': meta.get('filename')
                 })
+        
+        # 2. Fallback: If no items found (e.g., aggregation query), use receipts as "items" for visualization
+        if not items and results:
+            seen_receipts = set()
+            for r in results:
+                meta = r.get('metadata', {})
+                rid = meta.get('receipt_id')
+                if rid and rid not in seen_receipts:
+                    seen_receipts.add(rid)
+                    items.append({
+                        'name': f"Receipt from {meta.get('merchant_name', 'Unknown')}",
+                        'price': meta.get('total_amount'),
+                        'category': meta.get('category', 'Receipt'),  # Default to generic if missing
+                        'merchant': meta.get('merchant_name', 'Unknown'),
+                        'filename': meta.get('filename')
+                    })
         return items
 
     def _perform_aggregation_audit(self, params: Dict[str, Any], results: List[Dict[str, Any]]) -> Optional[Dict[str, Any]]:
