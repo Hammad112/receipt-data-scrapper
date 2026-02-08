@@ -10,7 +10,7 @@ import logging
 from typing import List, Dict, Any, Optional
 from openai import OpenAI
 
-from src.utils.logging_config import logger
+from ..utils.logging_config import logger
 
 
 class AnswerGenerator:

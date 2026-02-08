@@ -16,8 +16,8 @@ from openai import OpenAI
 from dotenv import load_dotenv
 
 # Absolute imports for industrial stability
-from src.utils.logging_config import logger, setup_logging
-from src.models import Receipt, ReceiptChunk
+from ..utils.logging_config import logger, setup_logging
+from ..models import Receipt, ReceiptChunk
 
 try:
     from pinecone import Pinecone, ServerlessSpec

@@ -13,8 +13,8 @@ from typing import List, Optional, Dict, Any, Tuple
 from dateutil import parser as date_parser
 
 # Absolute imports for industrial stability
-from src.models import Receipt, ReceiptItem, PaymentMethod, ItemCategory
-from src.utils.logging_config import logger
+from ..models import Receipt, ReceiptItem, PaymentMethod, ItemCategory
+from ..utils.logging_config import logger
 
 
 class ReceiptParser:

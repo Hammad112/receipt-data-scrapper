@@ -22,8 +22,8 @@ FROM python:3.11-slim
 COPY --from=builder /opt/venv /opt/venv
 ENV PATH="/opt/venv/bin:$PATH"
 
-# Create non-root user for security
-RUN groupadd -r appuser && useradd -r -g appuser appuser
+# Create non-root user with a home directory
+RUN groupadd -r appuser && useradd -m -r -g appuser appuser
 
 # Set working directory
 WORKDIR /app
@@ -33,8 +33,9 @@ COPY --chown=appuser:appuser src/ ./src/
 COPY --chown=appuser:appuser run.py .
 COPY --chown=appuser:appuser data/ ./data/
 
-# Create necessary directories and set permissions
-RUN mkdir -p /app/.streamlit && \
+# Create streamlit config directory in home
+RUN mkdir -p /home/appuser/.streamlit && \
+    chown -R appuser:appuser /home/appuser && \
     chown -R appuser:appuser /app
 
 # Switch to non-root user

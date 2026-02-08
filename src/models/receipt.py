@@ -14,7 +14,7 @@ from enum import Enum
 from pydantic import BaseModel, Field, field_validator
 
 # Absolute imports for industrial stability
-from src.utils.logging_config import logger
+from ..utils.logging_config import logger
 
 
 class PaymentMethod(str, Enum):

@@ -17,8 +17,8 @@ from typing import List, Optional, Set
 from difflib import SequenceMatcher
 
 # Absolute imports for industrial stability
-from src.utils.logging_config import logger
-from src.utils.normalization import normalize_merchant_name
+from ..utils.logging_config import logger
+from ..utils.normalization import normalize_merchant_name
 
 
 class SemanticMerchantMatcher:

@@ -1,1 +1,1 @@
-from src.models.receipt import Receipt, ReceiptItem, ReceiptChunk, QueryResult, PaymentMethod, ItemCategory
+from .receipt import Receipt, ReceiptItem, ReceiptChunk, QueryResult, PaymentMethod, ItemCategory

@@ -10,28 +10,22 @@ from datetime import datetime
 from typing import List, Dict, Any, Optional
 from dotenv import load_dotenv
 
-# Add src to path for robust imports
-sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+# Add project root to path for robust imports
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
+if project_root not in sys.path:
+    sys.path.insert(0, project_root)
 
-# Modular UI Components
-from components.dashboard import render_full_dashboard
-from components.visuals import render_response_feed_item
+# Modular UI Components (must be AFTER sys.path adjustment if they use src.)
+from src.ui.components.dashboard import render_full_dashboard
+from src.ui.components.visuals import render_response_feed_item
 
 # Core Business Logic
-try:
-    from ..utils.logging_config import logger, setup_logging
-    from ..models import Receipt, ReceiptChunk
-    from ..parsers import ReceiptParser
-    from ..chunking import ReceiptChunker
-    from ..vectorstore import VectorManager
-    from ..query import QueryEngine
-except (ImportError, ValueError):
-    from utils.logging_config import logger, setup_logging
-    from models import Receipt, ReceiptChunk
-    from parsers import ReceiptParser
-    from chunking import ReceiptChunker
-    from vectorstore import VectorManager
-    from query import QueryEngine
+from src.utils.logging_config import logger, setup_logging
+from src.models import Receipt, ReceiptChunk
+from src.parsers.receipt_parser import ReceiptParser
+from src.chunking.receipt_chunker import ReceiptChunker
+from src.vectorstore.vector_manager import VectorManager
+from src.query.query_engine import QueryEngine
 
 HISTORY_FILE = "data/query_history.json"
 

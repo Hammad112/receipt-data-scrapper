@@ -15,8 +15,8 @@ from typing import List, Dict, Any, Optional
 from collections import defaultdict
 
 # Absolute imports for industrial stability
-from src.models import Receipt, ReceiptItem, ReceiptChunk, ItemCategory
-from src.utils.normalization import normalize_merchant_name
+from ..models import Receipt, ReceiptItem, ReceiptChunk, ItemCategory
+from ..utils.normalization import normalize_merchant_name
 
 
 class ReceiptChunker:

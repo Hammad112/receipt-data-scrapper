@@ -20,7 +20,7 @@ from typing import Dict, Any, Optional, Tuple
 from dateutil import parser as date_parser
 from dateutil.relativedelta import relativedelta
 
-from src.utils.logging_config import logger
+from ..utils.logging_config import logger
 
 
 class TemporalQueryResolver:

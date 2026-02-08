@@ -10,11 +10,11 @@ from typing import Dict, Any, List, Optional
 from decimal import Decimal
 
 # Industrial-grade absolute imports
-from src.query.query_parser import QueryParser
-from src.query.answer_generator import AnswerGenerator
-from src.models import QueryResult
-from src.utils.logging_config import logger
-from src.utils.normalization import normalize_merchant_name
+from .query_parser import QueryParser
+from .answer_generator import AnswerGenerator
+from ..models import QueryResult
+from ..utils.logging_config import logger
+from ..utils.normalization import normalize_merchant_name
 
 
 class QueryEngine:

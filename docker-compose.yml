@@ -18,6 +18,7 @@ services:
       - STREAMLIT_SERVER_PORT=8501
       - STREAMLIT_SERVER_HEADLESS=true
       - STREAMLIT_SERVER_ENABLE_CORS=false
+      - STREAMLIT_BROWSER_GATHER_USAGE_STATS=false
       - PYTHONUNBUFFERED=1
     volumes:
       - receipt_data:/app/data
@@ -54,48 +55,62 @@ services:
     command: >
       python -c "
       import sys
-      sys.path.insert(0, '.')
+      import os
+      from pathlib import Path
+      
+      # Ensure project root is in path
+      sys.path.insert(0, os.getcwd())
+      
       from src.vectorstore.vector_manager import VectorManager
       from src.parsers.receipt_parser import ReceiptParser
       from src.chunking.receipt_chunker import ReceiptChunker
-      from src.utils.data_loader import load_receipt_files
-      import os
 
       print('Initializing components...')
-      vector_manager = VectorManager()
-      parser = ReceiptParser()
-      chunker = ReceiptChunker()
+      try:
+          vector_manager = VectorManager()
+          parser = ReceiptParser()
+          chunker = ReceiptChunker()
+      except Exception as e:
+          print(f'Initialization failed: {e}')
+          sys.exit(1)
 
       # Check if index has data
-      stats = vector_manager.get_index_stats()
-      if stats.get('total_vector_count', 0) > 0:
-        print(f'Index already contains {stats[\"total_vector_count\"]} vectors. Skipping indexing.')
-        sys.exit(0)
+      try:
+          stats = vector_manager.get_index_stats()
+          if stats.get('total_vector_count', 0) > 0:
+              print(f'Index already contains {stats[\"total_vector_count\"]} vectors. Skipping indexing.')
+              sys.exit(0)
+      except Exception as e:
+          print(f'Failed to check index stats: {e}')
 
-      print('Loading receipt data...')
-      data_path = os.getenv('RECEIPT_DATA_PATH', '/app/data/receipt_samples_100')
-      receipts = load_receipt_files(data_path)
-      print(f'Loaded {len(receipts)} receipt files')
+      print('Loading and processing receipt data...')
+      data_path = Path(os.getenv('RECEIPT_DATA_PATH', '/app/data/receipt_samples_100'))
+      if not data_path.exists():
+          print(f'Data path NOT FOUND: {data_path}')
+          sys.exit(1)
 
-      print('Parsing and chunking receipts...')
+      receipt_files = sorted(data_path.glob('receipt_*.txt'))
+      print(f'Found {len(receipt_files)} receipt files')
+
       all_chunks = []
-      for receipt_data in receipts:
-        try:
-          receipt = parser.parse(receipt_data['content'], receipt_data['filename'])
-          chunks = chunker.chunk_receipt(receipt)
-          all_chunks.extend(chunks)
-        except Exception as e:
-          print(f'Error processing {receipt_data[\"filename\"]}: {e}')
-          continue
+      for file_path in receipt_files:
+          try:
+              content = file_path.read_text(encoding='utf-8')
+              receipt = parser.parse_receipt(content, filename=file_path.name)
+              chunks = chunker.chunk_receipt(receipt)
+              all_chunks.extend(chunks)
+          except Exception as e:
+              print(f'Error processing {file_path.name}: {e}')
+              continue
 
-      print(f'Created {len(all_chunks)} chunks from {len(receipts)} receipts')
+      print(f'Created {len(all_chunks)} chunks from {len(receipt_files)} receipts')
 
       if all_chunks:
-        print('Indexing chunks...')
-        indexed = vector_manager.index_chunks(all_chunks, batch_size=50)
-        print(f'Successfully indexed {indexed} chunks')
+          print('Indexing chunks...')
+          indexed = vector_manager.index_chunks(all_chunks, batch_size=50)
+          print(f'Successfully indexed {indexed} chunks')
       else:
-        print('No chunks to index')
+          print('No chunks to index')
       "
     depends_on: []
     profiles:

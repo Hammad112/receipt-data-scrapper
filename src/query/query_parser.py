@@ -6,14 +6,14 @@ import re
 from typing import List, Optional, Dict, Any
 
 # Industrial-grade absolute imports
-from src.query.patterns import (
+from .patterns import (
     QUERY_PATTERNS, SEMANTIC_MAPPINGS, METRIC_PATTERNS, 
     AGGREGATION_PATTERNS
 )
-from src.query.advanced_date_resolver import TemporalQueryResolver
-from src.query.semantic_merchant_matcher import SemanticMerchantMatcher
-from src.models import PaymentMethod, ItemCategory
-from src.utils.logging_config import logger
+from .advanced_date_resolver import TemporalQueryResolver
+from .semantic_merchant_matcher import SemanticMerchantMatcher
+from ..models import PaymentMethod, ItemCategory
+from ..utils.logging_config import logger
 
 class QueryParser:
     """
